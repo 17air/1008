@@ -15,8 +15,8 @@
         android:theme="@style/Theme.Cardify">
 
         <meta-data
-            android:name="com.kakao.sdk.AppKey"
-            android:value="602759a70cb35fdbb8d886227770c244" />
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
 
         <activity
             android:name="com.example.cardify.ui.MainActivity"

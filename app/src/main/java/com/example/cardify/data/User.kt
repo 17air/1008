@@ -1,7 +1,7 @@
 package com.example.cardify.data
 
 /**
- * Represents the current user with a set of tags and coordinates.
+ * Represents the current user with an associated location and interest tags.
  */
 data class User(
     val tags: List<String>,
