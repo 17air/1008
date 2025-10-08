@@ -19,7 +19,7 @@
             android:id="@+id/groupNameText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.TitleMedium"
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
             tools:text="Hiking Club" />
 
         <TextView
@@ -27,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.BodyMedium"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
             tools:text="태그: 등산, 야외활동" />
 
         <TextView
@@ -35,7 +35,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.BodySmall"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
             tools:text="공유 태그 수: 1" />
 
         <TextView
@@ -43,7 +43,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.BodySmall"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
             tools:text="거리: 1.2 km" />
     </LinearLayout>
 
