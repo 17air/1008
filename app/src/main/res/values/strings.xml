@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Cardify</string>
+    <string name="location_permission_rationale">Location permission is required to show nearby groups.</string>
+</resources>
