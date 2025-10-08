@@ -15,9 +15,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Cardify">
 
+        <!-- TODO: Insert your Google Maps API key -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="<!-- TODO: Insert your Google Maps API key -->" />
+            android:value="@string/google_maps_key" />
 
         <activity
             android:name="com.example.cardify.ui.MainActivity"
