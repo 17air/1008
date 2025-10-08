@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Cardify</string>
     <string name="location_permission_rationale">Location permission is required to show nearby groups.</string>
-    <!-- Placeholder for Google Maps API key -->
-    <string name="google_maps_key">YOUR_API_KEY_HERE</string>
+    <string name="group_marker_message">%1$s\n공유 태그: %2$s</string>
+    <string name="group_marker_no_tags">없음</string>
 </resources>
