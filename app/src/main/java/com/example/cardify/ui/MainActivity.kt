@@ -1,6 +1,7 @@
 package com.example.cardify.ui
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Toast
@@ -9,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.cardify.R
 import com.example.cardify.databinding.ActivityMainBinding
+import com.example.cardify.ui.group.GroupMapActivity
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 
@@ -44,6 +46,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        binding.fabOpenGroupMap.setOnClickListener {
+            startActivity(Intent(this, GroupMapActivity::class.java))
+        }
     }
 
     override fun onStart() {

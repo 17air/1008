@@ -18,6 +18,15 @@
             android:value="@string/google_maps_key" />
 
         <activity
+            android:name="com.example.cardify.ui.group.CreateGroupActivity"
+            android:exported="false"
+            android:parentActivityName="com.example.cardify.ui.group.GroupMapActivity" />
+
+        <activity
+            android:name="com.example.cardify.ui.group.GroupMapActivity"
+            android:exported="false" />
+
+        <activity
             android:name="com.example.cardify.ui.MainActivity"
             android:exported="true">
             <intent-filter>

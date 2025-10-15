@@ -16,5 +16,9 @@ data class Group(
     val latitude: Double,
     val longitude: Double,
     val distanceMeters: Double = 0.0,
-    val sharedTagsCount: Int = 0
+    val sharedTagsCount: Int = 0,
+    val description: String? = null,
+    val meetingTime: String? = null,
+    val currentMembers: Int? = null,
+    val maxMembers: Int? = null
 )
