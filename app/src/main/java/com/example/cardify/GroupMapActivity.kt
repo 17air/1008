@@ -21,6 +21,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.DocumentSnapshot
@@ -39,6 +40,7 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private val firestore: FirebaseFirestore by lazy { Firebase.firestore }
     private val groups = mutableListOf<Group>()
+    private val markerMap = mutableMapOf<String, Marker>()
     private var hasCenteredOnGroups = false
     private var isFirebaseReady = false
 
@@ -61,8 +63,7 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
                 renderMarkers()
                 hasCenteredOnGroups = true
 
-                val latLng = LatLng(latitude, longitude)
-                map?.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
+                focusOnGroup(newGroup)
                 Toast.makeText(this, "새 소모임이 등록되었습니다.", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(this, "현재 위치를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show()
@@ -96,7 +97,7 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
 
         createButton = findViewById(R.id.button_create_group)
         recyclerView = findViewById(R.id.recycler_groups)
-        groupAdapter = GroupAdapter()
+        groupAdapter = GroupAdapter(::onGroupSelected)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = groupAdapter
 
@@ -183,18 +184,22 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun renderMarkers() {
         val googleMap = map ?: return
         googleMap.clear()
+        markerMap.clear()
 
         groups.forEach { group ->
             val lat = group.latitude
             val lng = group.longitude
             if (lat != null && lng != null) {
-                googleMap.addMarker(
+                val marker = googleMap.addMarker(
                     MarkerOptions()
                         .position(LatLng(lat, lng))
                         .title(group.title)
                         .snippet(group.description)
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET))
                 )
+                if (marker != null) {
+                    markerMap[group.key()] = marker
+                }
             }
         }
 
@@ -210,6 +215,23 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
                 hasCenteredOnGroups = true
             }
         }
+    }
+
+    private fun onGroupSelected(group: Group) {
+        focusOnGroup(group)
+    }
+
+    private fun focusOnGroup(group: Group) {
+        val lat = group.latitude
+        val lng = group.longitude
+        if (lat == null || lng == null) {
+            Toast.makeText(this, "이 소모임의 위치 정보가 없습니다.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val latLng = LatLng(lat, lng)
+        map?.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
+        markerMap[group.key()]?.showInfoWindow()
     }
 
     private fun seedLocalGroupsIfNeeded() {
@@ -271,6 +293,12 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
                     moveToSeoul()
                 }
             }
+    }
+
+    private fun Group.key(): String {
+        val latPart = latitude?.toString() ?: "null"
+        val lngPart = longitude?.toString() ?: "null"
+        return "$title|$latPart|$lngPart"
     }
 
     companion object {
