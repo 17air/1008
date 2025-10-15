@@ -10,18 +10,13 @@ import android.location.Location
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.example.cardify.R
-import com.example.cardify.data.CreateGroupRequest
 import com.example.cardify.databinding.ActivityCreateGroupBinding
-import com.example.cardify.viewmodel.CreateGroupViewModel
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -29,33 +24,32 @@ import java.io.IOException
 import java.util.Locale
 
 /**
- * Allows users to create a new group via the demo backend.
+ * Screen that allows the user to create a new group around their current location.
  */
 class CreateGroupActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityCreateGroupBinding
-    private val viewModel: CreateGroupViewModel by viewModels()
 
-    private val fusedLocationClient by lazy {
+    private val fusedLocationProvider by lazy {
         LocationServices.getFusedLocationProviderClient(this)
     }
 
     private var hasLocationPermission: Boolean = false
-    private var lastKnownLatitude: Double? = null
-    private var lastKnownLongitude: Double? = null
+    private var lastLatitude: Double = DEFAULT_LAT
+    private var lastLongitude: Double = DEFAULT_LNG
 
-    private val locationPermissionLauncher =
+    private val permissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
             hasLocationPermission = granted
             if (granted) {
-                fetchUserLocation()
+                fetchCurrentLocation()
             } else {
-                setFallbackLocationIfBlank()
-                Snackbar.make(binding.root, R.string.location_permission_rationale, Snackbar.LENGTH_LONG)
-                    .setAction(R.string.action_grant) {
-                        requestLocationPermission()
-                    }
-                    .show()
+                setFallbackLocation()
+                Toast.makeText(
+                    this,
+                    R.string.location_permission_rationale,
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
 
@@ -64,49 +58,8 @@ class CreateGroupActivity : AppCompatActivity() {
         binding = ActivityCreateGroupBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setSupportActionBar(binding.toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        binding.toolbar.setNavigationOnClickListener { finish() }
-
-        binding.buttonSubmit.setOnClickListener { submitForm() }
-        observeViewModel()
-    }
-
-    override fun onStart() {
-        super.onStart()
+        binding.btnRegisterGroup.setOnClickListener { submitGroup() }
         ensureLocationPermission()
-    }
-
-    private fun observeViewModel() {
-        viewModel.isSubmitting.observe(this) { isSubmitting ->
-            binding.progressBar.isVisible = isSubmitting
-            binding.buttonSubmit.isEnabled = !isSubmitting
-        }
-        viewModel.creationSuccess.observe(this) { request ->
-            request ?: return@observe
-            Toast.makeText(this, R.string.message_group_created, Toast.LENGTH_LONG).show()
-            val resultIntent = Intent().apply {
-                putExtra(GroupMapActivity.EXTRA_GROUP_TITLE, request.title)
-                putExtra(GroupMapActivity.EXTRA_GROUP_DESCRIPTION, request.description)
-                putExtra(GroupMapActivity.EXTRA_GROUP_LOCATION, request.location)
-                putExtra(GroupMapActivity.EXTRA_GROUP_MAX_PEOPLE, request.maxPeople)
-                putExtra(GroupMapActivity.EXTRA_GROUP_LATITUDE, request.latitude ?: DEFAULT_LAT)
-                putExtra(GroupMapActivity.EXTRA_GROUP_LONGITUDE, request.longitude ?: DEFAULT_LNG)
-            }
-            setResult(Activity.RESULT_OK, resultIntent)
-            viewModel.clearSuccess()
-            finish()
-        }
-        viewModel.errorMessage.observe(this) { message ->
-            message ?: return@observe
-            val displayMessage = if (message.isBlank()) {
-                getString(R.string.error_generic)
-            } else {
-                message
-            }
-            Snackbar.make(binding.root, displayMessage, Snackbar.LENGTH_LONG).show()
-            viewModel.clearError()
-        }
     }
 
     private fun ensureLocationPermission() {
@@ -116,85 +69,79 @@ class CreateGroupActivity : AppCompatActivity() {
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED -> {
                 hasLocationPermission = true
-                fetchUserLocation()
+                fetchCurrentLocation()
             }
 
             shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
-                setFallbackLocationIfBlank()
-                Snackbar.make(
-                    binding.root,
+                Toast.makeText(
+                    this,
                     R.string.location_permission_rationale,
-                    Snackbar.LENGTH_INDEFINITE
-                ).setAction(R.string.action_grant) {
-                    requestLocationPermission()
-                }.show()
+                    Toast.LENGTH_LONG
+                ).show()
+                permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
             }
 
-            else -> requestLocationPermission()
+            else -> permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
     }
 
-    private fun requestLocationPermission() {
-        locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-    }
-
-    private fun fetchUserLocation() {
-        if (!hasLocationPermission) {
-            setFallbackLocationIfBlank()
-            return
-        }
+    private fun fetchCurrentLocation() {
         try {
-            fusedLocationClient.lastLocation
+            fusedLocationProvider.lastLocation
                 .addOnSuccessListener { location: Location? ->
                     if (location != null) {
                         applyLocation(location)
                     } else {
-                        requestCurrentLocation()
+                        requestFreshLocation()
                     }
                 }
                 .addOnFailureListener {
-                    requestCurrentLocation()
+                    setFallbackLocation()
                 }
         } catch (securityException: SecurityException) {
-            Snackbar.make(binding.root, R.string.location_permission_rationale, Snackbar.LENGTH_LONG).show()
-            setFallbackLocationIfBlank()
+            setFallbackLocation()
         }
     }
 
-    private fun requestCurrentLocation() {
+    private fun requestFreshLocation() {
         if (!hasLocationPermission) {
-            setFallbackLocationIfBlank()
+            setFallbackLocation()
             return
         }
         try {
-            fusedLocationClient.getCurrentLocation(Priority.PRIORITY_BALANCED_POWER_ACCURACY, null)
+            fusedLocationProvider.getCurrentLocation(Priority.PRIORITY_BALANCED_POWER_ACCURACY, null)
                 .addOnSuccessListener { location: Location? ->
                     if (location != null) {
                         applyLocation(location)
                     } else {
-                        setFallbackLocationIfBlank()
+                        setFallbackLocation()
                     }
                 }
                 .addOnFailureListener {
-                    setFallbackLocationIfBlank()
+                    setFallbackLocation()
                 }
         } catch (securityException: SecurityException) {
-            Snackbar.make(binding.root, R.string.location_permission_rationale, Snackbar.LENGTH_LONG).show()
-            setFallbackLocationIfBlank()
+            setFallbackLocation()
         }
     }
 
     private fun applyLocation(location: Location) {
-        lastKnownLatitude = location.latitude
-        lastKnownLongitude = location.longitude
-        if (binding.inputLocation.text.isNullOrBlank()) {
-            resolveAddress(location.latitude, location.longitude)
-        }
+        lastLatitude = location.latitude
+        lastLongitude = location.longitude
+        resolveAddress(location.latitude, location.longitude)
+    }
+
+    private fun setFallbackLocation() {
+        binding.editLocation.setText(
+            getString(R.string.formatted_coordinates, DEFAULT_LAT, DEFAULT_LNG)
+        )
+        lastLatitude = DEFAULT_LAT
+        lastLongitude = DEFAULT_LNG
     }
 
     private fun resolveAddress(latitude: Double, longitude: Double) {
         lifecycleScope.launch {
-            val resolvedAddress = withContext(Dispatchers.IO) {
+            val addressLine = withContext(Dispatchers.IO) {
                 try {
                     val geocoder = Geocoder(this@CreateGroupActivity, Locale.getDefault())
                     val results: List<Address>? = geocoder.getFromLocation(latitude, longitude, 1)
@@ -203,45 +150,61 @@ class CreateGroupActivity : AppCompatActivity() {
                     null
                 }
             }
-
             val fallback = getString(R.string.formatted_coordinates, latitude, longitude)
-            binding.inputLocation.setText(resolvedAddress ?: fallback)
+            binding.editLocation.setText(addressLine ?: fallback)
         }
     }
 
-    private fun setFallbackLocationIfBlank() {
-        if (binding.inputLocation.text.isNullOrBlank()) {
-            binding.inputLocation.setText(
-                getString(R.string.formatted_coordinates, DEFAULT_LAT, DEFAULT_LNG)
-            )
-        }
-        if (lastKnownLatitude == null || lastKnownLongitude == null) {
-            lastKnownLatitude = DEFAULT_LAT
-            lastKnownLongitude = DEFAULT_LNG
-        }
-    }
+    private fun submitGroup() {
+        val title = binding.editTitle.text?.toString().orEmpty().trim()
+        val description = binding.editDescription.text?.toString().orEmpty().trim()
+        val location = binding.editLocation.text?.toString().orEmpty().trim()
+        val maxPeopleText = binding.editMaxPeople.text?.toString().orEmpty().trim()
 
-    private fun submitForm() {
-        val title = binding.inputTitle.text?.toString().orEmpty()
-        val description = binding.inputDescription.text?.toString().orEmpty()
-        val location = binding.inputLocation.text?.toString().orEmpty()
-        val maxPeopleText = binding.inputMaxPeople.text?.toString().orEmpty()
+        when {
+            title.isBlank() -> {
+                showValidationError(getString(R.string.error_group_title_required))
+                return
+            }
 
-        val errorResId = viewModel.validateInput(title, description, location, maxPeopleText)
-        if (errorResId != null) {
-            Snackbar.make(binding.root, getString(errorResId), Snackbar.LENGTH_LONG).show()
+            description.isBlank() -> {
+                showValidationError(getString(R.string.error_group_description_required))
+                return
+            }
+
+            location.isBlank() -> {
+                showValidationError(getString(R.string.error_group_location_required))
+                return
+            }
+
+            maxPeopleText.isBlank() -> {
+                showValidationError(getString(R.string.error_group_max_people_number))
+                return
+            }
+        }
+
+        val maxPeople = maxPeopleText.toIntOrNull()
+        if (maxPeople == null || maxPeople <= 0) {
+            showValidationError(getString(R.string.error_group_max_people_positive))
             return
         }
 
-        val request = CreateGroupRequest(
-            title = title,
-            description = description,
-            location = location,
-            maxPeople = maxPeopleText.toInt(),
-            latitude = lastKnownLatitude ?: DEFAULT_LAT,
-            longitude = lastKnownLongitude ?: DEFAULT_LNG
-        )
-        viewModel.submitGroup(request)
+        Toast.makeText(this, R.string.message_group_created, Toast.LENGTH_SHORT).show()
+
+        val data = Intent().apply {
+            putExtra(GroupMapActivity.EXTRA_GROUP_TITLE, title)
+            putExtra(GroupMapActivity.EXTRA_GROUP_DESCRIPTION, description)
+            putExtra(GroupMapActivity.EXTRA_GROUP_LOCATION, location)
+            putExtra(GroupMapActivity.EXTRA_GROUP_MAX_PEOPLE, maxPeople)
+            putExtra(GroupMapActivity.EXTRA_GROUP_LATITUDE, lastLatitude)
+            putExtra(GroupMapActivity.EXTRA_GROUP_LONGITUDE, lastLongitude)
+        }
+        setResult(Activity.RESULT_OK, data)
+        finish()
+    }
+
+    private fun showValidationError(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
 
     companion object {

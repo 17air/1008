@@ -7,7 +7,6 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -52,42 +51,6 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
     private var currentGroups: List<Group> = emptyList()
     private val markerByGroup = mutableMapOf<Group, Marker>()
 
-    private val locationPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-            hasLocationPermission = granted
-            if (granted) {
-                fetchUserLocation()
-            } else {
-                showPermissionDeniedMessage()
-                updateMyLocationLayer()
-                viewModel.loadGroups(userLocation)
-            }
-        }
-
-    private val createGroupLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val data = result.data ?: return@registerForActivityResult
-                val title = data.getStringExtra(EXTRA_GROUP_TITLE) ?: return@registerForActivityResult
-                val description = data.getStringExtra(EXTRA_GROUP_DESCRIPTION) ?: ""
-                val location = data.getStringExtra(EXTRA_GROUP_LOCATION) ?: ""
-                val maxPeople = data.getIntExtra(EXTRA_GROUP_MAX_PEOPLE, 1)
-                val latitude = data.getDoubleExtra(EXTRA_GROUP_LATITUDE, userLocation.latitude)
-                val longitude = data.getDoubleExtra(EXTRA_GROUP_LONGITUDE, userLocation.longitude)
-
-                val group = Group(
-                    title = title,
-                    description = description,
-                    location = location,
-                    maxPeople = maxPeople,
-                    latitude = latitude,
-                    longitude = longitude
-                )
-                viewModel.addGroup(group, userLocation)
-                zoomToUser()
-            }
-        }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityGroupMapBinding.inflate(layoutInflater)
@@ -118,6 +81,29 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
         renderGroups(currentGroups)
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CREATE_GROUP && resultCode == Activity.RESULT_OK && data != null) {
+            val title = data.getStringExtra(EXTRA_GROUP_TITLE) ?: return
+            val description = data.getStringExtra(EXTRA_GROUP_DESCRIPTION).orEmpty()
+            val location = data.getStringExtra(EXTRA_GROUP_LOCATION).orEmpty()
+            val maxPeople = data.getIntExtra(EXTRA_GROUP_MAX_PEOPLE, 1)
+            val latitude = data.getDoubleExtra(EXTRA_GROUP_LATITUDE, userLocation.latitude)
+            val longitude = data.getDoubleExtra(EXTRA_GROUP_LONGITUDE, userLocation.longitude)
+
+            val group = Group(
+                title = title,
+                description = description,
+                location = location,
+                maxPeople = maxPeople,
+                latitude = latitude,
+                longitude = longitude
+            )
+            viewModel.addGroup(group, userLocation)
+            zoomToUser()
+        }
+    }
+
     private fun setupRecyclerView() {
         binding.groupRecyclerView.apply {
             layoutManager = LinearLayoutManager(this@GroupMapActivity)
@@ -136,12 +122,12 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun setupButtons() {
-        val launchCreate = {
+        val launchCreateScreen = {
             val intent = Intent(this, CreateGroupActivity::class.java)
-            createGroupLauncher.launch(intent)
+            startActivityForResult(intent, REQUEST_CREATE_GROUP)
         }
-        binding.fabCreateGroup.setOnClickListener { launchCreate() }
-        binding.buttonCreateGroup.setOnClickListener { launchCreate() }
+        binding.fabCreateGroup.setOnClickListener { launchCreateScreen() }
+        binding.buttonCreateGroup.setOnClickListener { launchCreateScreen() }
     }
 
     private fun observeViewModel() {
@@ -194,12 +180,32 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
                     R.string.location_permission_rationale,
                     Snackbar.LENGTH_INDEFINITE
                 ).setAction(R.string.action_grant) {
-                    locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                    requestLocationPermission()
                 }.show()
             }
 
-            else -> {
-                locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+            else -> requestLocationPermission()
+        }
+    }
+
+    private fun requestLocationPermission() {
+        requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST)
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == LOCATION_PERMISSION_REQUEST) {
+            hasLocationPermission = grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED
+            if (hasLocationPermission) {
+                fetchUserLocation()
+            } else {
+                showPermissionDeniedMessage()
+                updateMyLocationLayer()
+                viewModel.loadGroups(userLocation)
             }
         }
     }
@@ -324,6 +330,8 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
         private const val DEFAULT_ZOOM = 13f
         private const val FOCUS_ZOOM = 15f
         private const val MAP_PADDING = 120
+        private const val LOCATION_PERMISSION_REQUEST = 2001
+        private const val REQUEST_CREATE_GROUP = 1001
 
         const val EXTRA_GROUP_TITLE = "extra_group_title"
         const val EXTRA_GROUP_DESCRIPTION = "extra_group_description"
