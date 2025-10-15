@@ -99,7 +99,8 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
         groupAdapter = GroupAdapter()
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = groupAdapter
-        groupAdapter.submitList(groups.toList())
+
+        seedLocalGroupsIfNeeded()
 
         createButton.setOnClickListener {
             val intent = Intent(this, CreateGroupActivity::class.java)
@@ -209,6 +210,42 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
                 hasCenteredOnGroups = true
             }
         }
+    }
+
+    private fun seedLocalGroupsIfNeeded() {
+        if (groups.isNotEmpty()) {
+            groupAdapter.submitList(groups.toList())
+            renderMarkers()
+            return
+        }
+
+        val defaultGroups = listOf(
+            Group(
+                title = "광화문 문화 산책",
+                description = "주말 오전에 경복궁과 북촌을 함께 둘러봐요.",
+                maxPeople = 8,
+                latitude = 37.5752,
+                longitude = 126.9769
+            ),
+            Group(
+                title = "한강 러닝 크루",
+                description = "매주 수요일 저녁 여의도 한강공원 5km 러닝.",
+                maxPeople = 12,
+                latitude = 37.5271,
+                longitude = 126.9326
+            ),
+            Group(
+                title = "홍대 보드게임 모임",
+                description = "보드게임 카페에서 신작 게임을 함께 즐겨요.",
+                maxPeople = 6,
+                latitude = 37.5551,
+                longitude = 126.9226
+            )
+        )
+
+        groups.addAll(defaultGroups)
+        groupAdapter.submitList(groups.toList())
+        renderMarkers()
     }
 
     private fun moveToSeoul() {

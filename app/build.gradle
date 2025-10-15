@@ -1,7 +1,6 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
-    id 'com.google.gms.google-services'
 }
 
 android {
@@ -53,4 +52,21 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+}
+
+// Apply the Google Services Gradle plugin only when a configuration file is present.
+// This keeps local demo builds working even without a google-services.json file while
+// still enabling Firebase integration for environments that include one.
+def googleServicesCandidates = [
+        file('google-services.json'),
+        file('src/google-services.json'),
+        file('src/debug/google-services.json'),
+        rootProject.file('google-services.json'),
+        rootProject.file('app/google-services.json')
+]
+
+if (googleServicesCandidates.any { it.exists() }) {
+    apply plugin: 'com.google.gms.google-services'
+} else {
+    logger.lifecycle('google-services.json not found – skipping Google Services plugin. Firebase features will remain disabled in this build.')
 }
