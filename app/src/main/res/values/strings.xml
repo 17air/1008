@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">Cardify</string>
+    <string name="google_maps_key">AIzaSyCScu-Xx8jiAuPp67x1HLdB_uRv9l_VxeM</string>
+    <string name="location_permission_rationale">Location permission is required to show nearby groups.</string>
+    <string name="user_location_marker_title">현재 위치</string>
+    <string name="group_map_title">소모임 지도</string>
+    <string name="create_group_title">소모임 만들기</string>
+    <string name="create_group_submit">소모임 등록</string>
+    <string name="hint_group_title">모임 제목</string>
+    <string name="hint_group_description">모임 설명</string>
+    <string name="hint_group_location">모임 장소</string>
+    <string name="hint_group_max_people">최대 인원</string>
+    <string name="location_loading_placeholder">현재 위치 자동 입력 중...</string>
+    <string name="message_group_created">소모임이 등록되었습니다.</string>
+    <string name="error_generic">잠시 후 다시 시도해주세요.</string>
+    <string name="accessibility_create_group">소모임 만들기</string>
+    <string name="accessibility_open_group_map">소모임 지도 열기</string>
+    <string name="action_grant">허용</string>
+    <string name="error_group_title_required">제목을 입력해주세요.</string>
+    <string name="error_group_description_required">설명을 입력해주세요.</string>
+    <string name="error_group_location_required">위치를 입력해주세요.</string>
+    <string name="error_group_max_people_number">정원은 숫자로 입력해주세요.</string>
+    <string name="error_group_max_people_positive">정원은 1명 이상이어야 합니다.</string>
+    <string name="formatted_coordinates">%1$.4f, %2$.4f</string>
+    <string name="group_list_empty">주변에 표시할 소모임이 없습니다.</string>
+    <string name="group_distance_km">거리: %1$.1f km</string>
+    <string name="group_distance_m">거리: %1$.0f m</string>
+    <string name="group_max_people_format">정원: %1$d명</string>
+    <string name="create_group_button">소모임 생성</string>
+</resources>
