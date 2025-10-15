@@ -132,9 +132,8 @@ class CreateGroupActivity : AppCompatActivity() {
     }
 
     private fun setFallbackLocation() {
-        binding.editLocation.setText(
+        binding.textLocation.text =
             getString(R.string.formatted_coordinates, DEFAULT_LAT, DEFAULT_LNG)
-        )
         lastLatitude = DEFAULT_LAT
         lastLongitude = DEFAULT_LNG
     }
@@ -151,14 +150,14 @@ class CreateGroupActivity : AppCompatActivity() {
                 }
             }
             val fallback = getString(R.string.formatted_coordinates, latitude, longitude)
-            binding.editLocation.setText(addressLine ?: fallback)
+            binding.textLocation.text = addressLine ?: fallback
         }
     }
 
     private fun submitGroup() {
         val title = binding.editTitle.text?.toString().orEmpty().trim()
         val description = binding.editDescription.text?.toString().orEmpty().trim()
-        val location = binding.editLocation.text?.toString().orEmpty().trim()
+        val location = binding.textLocation.text.toString().trim()
         val maxPeopleText = binding.editMaxPeople.text?.toString().orEmpty().trim()
 
         when {

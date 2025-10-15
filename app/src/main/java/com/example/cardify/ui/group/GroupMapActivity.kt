@@ -86,10 +86,12 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
         if (requestCode == REQUEST_CREATE_GROUP && resultCode == Activity.RESULT_OK && data != null) {
             val title = data.getStringExtra(EXTRA_GROUP_TITLE) ?: return
             val description = data.getStringExtra(EXTRA_GROUP_DESCRIPTION).orEmpty()
-            val location = data.getStringExtra(EXTRA_GROUP_LOCATION).orEmpty()
             val maxPeople = data.getIntExtra(EXTRA_GROUP_MAX_PEOPLE, 1)
             val latitude = data.getDoubleExtra(EXTRA_GROUP_LATITUDE, userLocation.latitude)
             val longitude = data.getDoubleExtra(EXTRA_GROUP_LONGITUDE, userLocation.longitude)
+            val location = data.getStringExtra(EXTRA_GROUP_LOCATION).orEmpty().ifBlank {
+                getString(R.string.formatted_coordinates, latitude, longitude)
+            }
 
             val group = Group(
                 title = title,
@@ -122,12 +124,12 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun setupButtons() {
-        val launchCreateScreen = {
-            val intent = Intent(this, CreateGroupActivity::class.java)
-            startActivityForResult(intent, REQUEST_CREATE_GROUP)
+        binding.fabCreateGroup.setOnClickListener {
+            startActivityForResult(Intent(this, CreateGroupActivity::class.java), REQUEST_CREATE_GROUP)
         }
-        binding.fabCreateGroup.setOnClickListener { launchCreateScreen() }
-        binding.buttonCreateGroup.setOnClickListener { launchCreateScreen() }
+        binding.buttonCreateGroup.setOnClickListener {
+            startActivityForResult(Intent(this, CreateGroupActivity::class.java), REQUEST_CREATE_GROUP)
+        }
     }
 
     private fun observeViewModel() {

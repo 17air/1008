@@ -10,6 +10,7 @@
     <string name="hint_group_description">모임 설명</string>
     <string name="hint_group_location">모임 장소</string>
     <string name="hint_group_max_people">최대 인원</string>
+    <string name="location_loading_placeholder">현재 위치 자동 입력 중...</string>
     <string name="message_group_created">소모임이 등록되었습니다.</string>
     <string name="error_generic">잠시 후 다시 시도해주세요.</string>
     <string name="accessibility_create_group">소모임 만들기</string>

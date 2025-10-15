@@ -1,24 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
-    android:padding="24dp">
+    android:padding="16dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/textHeader"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/create_group_title"
-            android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
-            android:textColor="@android:color/black"
-            android:layout_marginBottom="24dp" />
 
         <EditText
             android:id="@+id/editTitle"
@@ -26,8 +16,7 @@
             android:layout_height="wrap_content"
             android:hint="@string/hint_group_title"
             android:inputType="textCapSentences"
-            android:padding="12dp"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="12dp" />
 
         <EditText
             android:id="@+id/editDescription"
@@ -36,19 +25,8 @@
             android:hint="@string/hint_group_description"
             android:inputType="textMultiLine"
             android:minLines="3"
-            android:padding="12dp"
-            android:layout_marginBottom="16dp" />
-
-        <EditText
-            android:id="@+id/editLocation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/hint_group_location"
-            android:inputType="textCapSentences|textMultiLine"
-            android:minLines="2"
-            android:padding="12dp"
-            android:text="현재 위치를 불러오는 중..."
-            android:layout_marginBottom="16dp" />
+            android:gravity="top"
+            android:layout_marginBottom="12dp" />
 
         <EditText
             android:id="@+id/editMaxPeople"
@@ -56,18 +34,25 @@
             android:layout_height="wrap_content"
             android:hint="@string/hint_group_max_people"
             android:inputType="number"
-            android:padding="12dp"
-            android:layout_marginBottom="24dp" />
+            android:layout_marginBottom="12dp" />
 
-        <com.google.android.material.button.MaterialButton
+        <TextView
+            android:id="@+id/textLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/location_loading_placeholder"
+            android:padding="12dp"
+            android:background="@android:color/transparent"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="16dp" />
+
+        <Button
             android:id="@+id/btnRegisterGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/create_group_submit"
-            app:cornerRadius="24dp"
-            app:backgroundTint="?attr/colorPrimary"
+            android:backgroundTint="?attr/colorPrimary"
             android:textColor="@android:color/white" />
-
     </LinearLayout>
 
 </ScrollView>
