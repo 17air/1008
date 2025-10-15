@@ -46,32 +46,20 @@ class MapBinder(
 
         groups.forEach { group ->
             val position = LatLng(group.latitude, group.longitude)
-            val tagsText = context.getString(
-                R.string.group_tags_label,
-                group.tags.joinToString(separator = ", ")
-            )
-            val sharedText = context.getString(
-                R.string.group_shared_tags_label,
-                group.sharedTagsCount
-            )
+            val snippet = context.getString(
+                R.string.group_max_people_format,
+                group.maxPeople
+            ) + "\n" + group.location
             val marker = googleMap.addMarker(
                 MarkerOptions()
                     .position(position)
-                    .title(group.name)
-                    .snippet("$tagsText\n$sharedText")
-                    .icon(
-                        BitmapDescriptorFactory.defaultMarker(
-                            if (group.sharedTagsCount > 0) {
-                                BitmapDescriptorFactory.HUE_ROSE
-                            } else {
-                                BitmapDescriptorFactory.HUE_ORANGE
-                            }
-                        )
-                    )
+                    .title(group.title)
+                    .snippet(snippet)
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE))
             )
             if (marker != null) {
-                marker.tag = group.name
-                markerMap[group.name] = marker
+                marker.tag = group.title
+                markerMap[group.title] = marker
                 boundsBuilder.include(position)
                 hasBounds = true
             }
@@ -92,7 +80,7 @@ class MapBinder(
     }
 
     fun focusOnGroup(group: Group) {
-        val marker = markerMap[group.name] ?: return
+        val marker = markerMap[group.title] ?: return
         googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.position, FOCUS_ZOOM))
         marker.showInfoWindow()
     }

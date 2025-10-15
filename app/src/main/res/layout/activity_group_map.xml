@@ -33,24 +33,40 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/button_create_group" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_create_group"
+            style="@style/Widget.Material3.Button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="16dp"
+            android:text="@string/create_group_button"
+            app:backgroundTint="?attr/colorPrimary"
+            app:cornerRadius="24dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toTopOf="@id/group_list_card" />
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/group_list_card"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_margin="16dp"
             android:backgroundTint="?attr/colorSurface"
+            app:cardCornerRadius="20dp"
             app:cardElevation="8dp"
             app:cardUseCompatPadding="true"
-            app:layout_constraintTop_toBottomOf="@id/map_container"
+            app:layout_constraintTop_toBottomOf="@id/button_create_group"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:padding="16dp">
 
@@ -73,9 +89,10 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/group_recycler_view"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dp"
                     android:layout_marginTop="12dp"
-                    android:nestedScrollingEnabled="false" />
+                    android:nestedScrollingEnabled="false"
+                    android:layout_weight="1" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -83,19 +100,14 @@
             android:id="@+id/fab_create_group"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
             android:contentDescription="@string/accessibility_create_group"
             android:src="@drawable/ic_add"
             app:backgroundTint="?attr/colorPrimary"
             app:layout_constraintStart_toStartOf="@id/map_container"
             app:layout_constraintTop_toTopOf="@id/map_container"
-            app:layout_constraintBottom_toBottomOf="@id/map_container"
-            app:layout_constraintVertical_bias="0.0"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_goneMarginTop="16dp"
-            app:maxImageSize="32dp"
-            app:tint="@android:color/white"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp" />
+            app:tint="@android:color/white" />
 
         <ProgressBar
             android:id="@+id/progress_bar"

@@ -15,11 +15,10 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cardify.R
 import com.example.cardify.data.Group
-import com.example.cardify.data.PostResponse
 import com.example.cardify.databinding.ActivityGroupMapBinding
 import com.example.cardify.ui.adapter.GroupAdapter
 import com.example.cardify.util.Geo
-import com.example.cardify.viewmodel.GroupMapViewModel
+import com.example.cardify.viewmodel.GroupViewModel
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -32,31 +31,26 @@ import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.snackbar.Snackbar
-import kotlin.random.Random
-import java.util.LinkedHashSet
 
 /**
- * Displays nearby groups on a Google Map alongside a bottom list for quick browsing.
+ * Displays the combined map and group list experience for the demo.
  */
 class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var binding: ActivityGroupMapBinding
-    private val viewModel: GroupMapViewModel by viewModels()
+    private val viewModel: GroupViewModel by viewModels()
 
     private val fusedLocationClient by lazy {
         LocationServices.getFusedLocationProviderClient(this)
     }
 
-    private val groupAdapter by lazy {
-        GroupAdapter { group -> focusOnGroup(group) }
-    }
+    private val groupAdapter by lazy { GroupAdapter { focusOnGroup(it) } }
 
     private var googleMap: GoogleMap? = null
-    private var userLocation: LatLng = LatLng(DEFAULT_LAT, DEFAULT_LNG)
     private var hasLocationPermission: Boolean = false
-    private var latestPosts: List<PostResponse> = emptyList()
-    private var groupItems: List<GroupItem> = emptyList()
-    private val markerByPostId = mutableMapOf<Int, Marker>()
+    private var userLocation: LatLng = LatLng(DEFAULT_LAT, DEFAULT_LNG)
+    private var currentGroups: List<Group> = emptyList()
+    private val markerByGroup = mutableMapOf<Group, Marker>()
 
     private val locationPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
@@ -66,14 +60,31 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
             } else {
                 showPermissionDeniedMessage()
                 updateMyLocationLayer()
-                viewModel.loadNearbyGroups(userLocation.latitude, userLocation.longitude)
+                viewModel.loadGroups(userLocation)
             }
         }
 
     private val createGroupLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                viewModel.loadNearbyGroups(userLocation.latitude, userLocation.longitude)
+                val data = result.data ?: return@registerForActivityResult
+                val title = data.getStringExtra(EXTRA_GROUP_TITLE) ?: return@registerForActivityResult
+                val description = data.getStringExtra(EXTRA_GROUP_DESCRIPTION) ?: ""
+                val location = data.getStringExtra(EXTRA_GROUP_LOCATION) ?: ""
+                val maxPeople = data.getIntExtra(EXTRA_GROUP_MAX_PEOPLE, 1)
+                val latitude = data.getDoubleExtra(EXTRA_GROUP_LATITUDE, userLocation.latitude)
+                val longitude = data.getDoubleExtra(EXTRA_GROUP_LONGITUDE, userLocation.longitude)
+
+                val group = Group(
+                    title = title,
+                    description = description,
+                    location = location,
+                    maxPeople = maxPeople,
+                    latitude = latitude,
+                    longitude = longitude
+                )
+                viewModel.addGroup(group, userLocation)
+                zoomToUser()
             }
         }
 
@@ -89,11 +100,7 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
         setupRecyclerView()
         setupMapFragment()
         observeViewModel()
-
-        binding.fabCreateGroup.setOnClickListener {
-            val intent = Intent(this, CreateGroupActivity::class.java)
-            createGroupLauncher.launch(intent)
-        }
+        setupButtons()
     }
 
     override fun onStart() {
@@ -108,7 +115,7 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
             uiSettings.isMapToolbarEnabled = false
         }
         updateMyLocationLayer()
-        renderGroupsOnMap()
+        renderGroups(currentGroups)
     }
 
     private fun setupRecyclerView() {
@@ -119,37 +126,55 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun setupMapFragment() {
-        val mapFragment = supportFragmentManager.findFragmentById(R.id.map_container) as? SupportMapFragment
+        val fragment = supportFragmentManager.findFragmentById(R.id.map_container) as? SupportMapFragment
             ?: SupportMapFragment.newInstance().also {
                 supportFragmentManager.beginTransaction()
                     .replace(R.id.map_container, it)
                     .commitNow()
             }
-        mapFragment.getMapAsync(this)
+        fragment.getMapAsync(this)
+    }
+
+    private fun setupButtons() {
+        val launchCreate = {
+            val intent = Intent(this, CreateGroupActivity::class.java)
+            createGroupLauncher.launch(intent)
+        }
+        binding.fabCreateGroup.setOnClickListener { launchCreate() }
+        binding.buttonCreateGroup.setOnClickListener { launchCreate() }
     }
 
     private fun observeViewModel() {
-        viewModel.posts.observe(this) { posts ->
-            latestPosts = posts
-            updateGroupContent(posts)
+        viewModel.groups.observe(this) { groups ->
+            val adjustedGroups = groups.map { group ->
+                group.copy(
+                    distanceMeters = Geo.haversineDistance(
+                        userLocation.latitude,
+                        userLocation.longitude,
+                        group.latitude,
+                        group.longitude
+                    )
+                )
+            }
+            currentGroups = adjustedGroups
+            groupAdapter.submitList(adjustedGroups)
+            binding.emptyStateText.isVisible = adjustedGroups.isEmpty()
+            binding.groupRecyclerView.isVisible = adjustedGroups.isNotEmpty()
+            renderGroups(adjustedGroups)
         }
         viewModel.isLoading.observe(this) { isLoading ->
             binding.progressBar.isVisible = isLoading
         }
         viewModel.errorMessage.observe(this) { message ->
             message ?: return@observe
-            val displayMessage = if (message.isBlank()) {
-                getString(R.string.error_generic)
-            } else {
-                message
-            }
-            Snackbar.make(binding.root, displayMessage, Snackbar.LENGTH_LONG).show()
+            val resolved = if (message.isBlank()) getString(R.string.error_generic) else message
+            Snackbar.make(binding.root, resolved, Snackbar.LENGTH_LONG).show()
             viewModel.clearError()
         }
         viewModel.toastMessage.observe(this) { message ->
             message ?: return@observe
             Toast.makeText(this, message, Toast.LENGTH_LONG).show()
-            viewModel.clearToastMessage()
+            viewModel.clearToast()
         }
     }
 
@@ -162,6 +187,7 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
                 hasLocationPermission = true
                 fetchUserLocation()
             }
+
             shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
                 Snackbar.make(
                     binding.root,
@@ -171,6 +197,7 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
                     locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
                 }.show()
             }
+
             else -> {
                 locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
             }
@@ -216,57 +243,27 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun updateUserLocation(latLng: LatLng) {
         userLocation = latLng
         updateMyLocationLayer()
-        viewModel.loadNearbyGroups(latLng.latitude, latLng.longitude)
-        googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, DEFAULT_ZOOM))
-        updateGroupContent(latestPosts)
+        viewModel.loadGroups(latLng)
+        zoomToUser()
+    }
+
+    private fun zoomToUser() {
+        googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(userLocation, DEFAULT_ZOOM))
     }
 
     private fun updateMyLocationLayer() {
         val map = googleMap ?: return
         try {
             map.isMyLocationEnabled = hasLocationPermission
-        } catch (securityException: SecurityException) {
+        } catch (_: SecurityException) {
             map.isMyLocationEnabled = false
         }
     }
 
-    private fun updateGroupContent(posts: List<PostResponse>) {
-        groupItems = posts.mapIndexed { index, post ->
-            val latLng = positionForPost(post, index)
-            val tags = tagsForPost(post)
-            val distanceMeters = Geo.haversineDistance(
-                userLocation.latitude,
-                userLocation.longitude,
-                latLng.latitude,
-                latLng.longitude
-            )
-            val sharedTagsCount = tags.count { userTags.contains(it) }
-            GroupItem(
-                postId = post.id,
-                group = Group(
-                    name = post.title.ifBlank { getString(R.string.app_name) },
-                    tags = tags,
-                    latitude = latLng.latitude,
-                    longitude = latLng.longitude,
-                    distanceMeters = distanceMeters,
-                    sharedTagsCount = sharedTagsCount,
-                    description = post.body
-                ),
-                latLng = latLng
-            )
-        }
-
-        val groups = groupItems.map { it.group }
-        groupAdapter.submitList(groups)
-        binding.emptyStateText.isVisible = groups.isEmpty()
-        binding.groupRecyclerView.isVisible = groups.isNotEmpty()
-        renderGroupsOnMap()
-    }
-
-    private fun renderGroupsOnMap() {
+    private fun renderGroups(groups: List<Group>) {
         val map = googleMap ?: return
         map.clear()
-        markerByPostId.clear()
+        markerByGroup.clear()
 
         val boundsBuilder = LatLngBounds.Builder()
         var hasBounds = false
@@ -281,16 +278,17 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
             hasBounds = true
         }
 
-        groupItems.forEach { item ->
+        groups.forEach { group ->
+            val position = LatLng(group.latitude, group.longitude)
             val marker = map.addMarker(
                 MarkerOptions()
-                    .position(item.latLng)
-                    .title(item.group.name)
-                    .snippet(item.group.tags.joinToString(separator = ", "))
+                    .position(position)
+                    .title(group.title)
+                    .snippet(group.location)
             )
             if (marker != null) {
-                markerByPostId[item.postId] = marker
-                boundsBuilder.include(item.latLng)
+                markerByGroup[group] = marker
+                boundsBuilder.include(position)
                 hasBounds = true
             }
         }
@@ -310,46 +308,15 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun focusOnGroup(group: Group) {
-        val item = groupItems.firstOrNull { it.group == group } ?: return
-        val marker = markerByPostId[item.postId]
-        googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(item.latLng, FOCUS_ZOOM))
-        marker?.showInfoWindow()
-    }
-
-    private fun positionForPost(post: PostResponse, index: Int): LatLng {
-        val baseSeed = if (post.id != 0) post.id else (index + 1) * 7919
-        val random = Random(baseSeed)
-        val latOffset = (random.nextDouble() - 0.5) * 2 * MARKER_OFFSET_DEGREES
-        val lngOffset = (random.nextDouble() - 0.5) * 2 * MARKER_OFFSET_DEGREES
-        return LatLng(DEFAULT_LAT + latOffset, DEFAULT_LNG + lngOffset)
-    }
-
-    private fun tagsForPost(post: PostResponse): List<String> {
-        val delimiters = " ,\n\r\t".toCharArray()
-        val words = post.body.split(*delimiters)
-            .map { it.trim() }
-            .filter { it.length in 2..8 }
-        val unique = LinkedHashSet<String>()
-        words.forEach { word ->
-            if (unique.size < MAX_TAG_COUNT) {
-                unique.add(word)
-            }
-        }
-        if (unique.isEmpty()) {
-            unique.addAll(DEFAULT_TAGS)
-        }
-        return unique.toList().take(MAX_TAG_COUNT)
+        val target = currentGroups.firstOrNull { it == group } ?: return
+        val position = LatLng(target.latitude, target.longitude)
+        googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(position, FOCUS_ZOOM))
+        markerByGroup[target]?.showInfoWindow()
     }
 
     private fun showPermissionDeniedMessage() {
         Snackbar.make(binding.root, R.string.location_permission_rationale, Snackbar.LENGTH_LONG).show()
     }
-
-    private data class GroupItem(
-        val postId: Int,
-        val group: Group,
-        val latLng: LatLng
-    )
 
     companion object {
         private const val DEFAULT_LAT = 37.566
@@ -357,9 +324,12 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
         private const val DEFAULT_ZOOM = 13f
         private const val FOCUS_ZOOM = 15f
         private const val MAP_PADDING = 120
-        private const val MARKER_OFFSET_DEGREES = 0.01
-        private const val MAX_TAG_COUNT = 3
-        private val DEFAULT_TAGS = listOf("모임", "친목", "취미")
-        private val userTags = setOf("등산", "산책", "스터디", "카페", "러닝")
+
+        const val EXTRA_GROUP_TITLE = "extra_group_title"
+        const val EXTRA_GROUP_DESCRIPTION = "extra_group_description"
+        const val EXTRA_GROUP_LOCATION = "extra_group_location"
+        const val EXTRA_GROUP_MAX_PEOPLE = "extra_group_max_people"
+        const val EXTRA_GROUP_LATITUDE = "extra_group_latitude"
+        const val EXTRA_GROUP_LONGITUDE = "extra_group_longitude"
     }
 }

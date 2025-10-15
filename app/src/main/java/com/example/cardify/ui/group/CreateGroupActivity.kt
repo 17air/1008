@@ -2,6 +2,7 @@ package com.example.cardify.ui.group
 
 import android.Manifest
 import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
@@ -28,7 +29,7 @@ import java.io.IOException
 import java.util.Locale
 
 /**
- * Allows users to create a new group via the backend API.
+ * Allows users to create a new group via the demo backend.
  */
 class CreateGroupActivity : AppCompatActivity() {
 
@@ -81,9 +82,19 @@ class CreateGroupActivity : AppCompatActivity() {
             binding.progressBar.isVisible = isSubmitting
             binding.buttonSubmit.isEnabled = !isSubmitting
         }
-        viewModel.creationSuccess.observe(this) {
+        viewModel.creationSuccess.observe(this) { request ->
+            request ?: return@observe
             Toast.makeText(this, R.string.message_group_created, Toast.LENGTH_LONG).show()
-            setResult(Activity.RESULT_OK)
+            val resultIntent = Intent().apply {
+                putExtra(GroupMapActivity.EXTRA_GROUP_TITLE, request.title)
+                putExtra(GroupMapActivity.EXTRA_GROUP_DESCRIPTION, request.description)
+                putExtra(GroupMapActivity.EXTRA_GROUP_LOCATION, request.location)
+                putExtra(GroupMapActivity.EXTRA_GROUP_MAX_PEOPLE, request.maxPeople)
+                putExtra(GroupMapActivity.EXTRA_GROUP_LATITUDE, request.latitude ?: DEFAULT_LAT)
+                putExtra(GroupMapActivity.EXTRA_GROUP_LONGITUDE, request.longitude ?: DEFAULT_LNG)
+            }
+            setResult(Activity.RESULT_OK, resultIntent)
+            viewModel.clearSuccess()
             finish()
         }
         viewModel.errorMessage.observe(this) { message ->
@@ -107,6 +118,7 @@ class CreateGroupActivity : AppCompatActivity() {
                 hasLocationPermission = true
                 fetchUserLocation()
             }
+
             shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
                 setFallbackLocationIfBlank()
                 Snackbar.make(
@@ -117,6 +129,7 @@ class CreateGroupActivity : AppCompatActivity() {
                     requestLocationPermission()
                 }.show()
             }
+
             else -> requestLocationPermission()
         }
     }
@@ -127,6 +140,7 @@ class CreateGroupActivity : AppCompatActivity() {
 
     private fun fetchUserLocation() {
         if (!hasLocationPermission) {
+            setFallbackLocationIfBlank()
             return
         }
         try {
@@ -148,7 +162,10 @@ class CreateGroupActivity : AppCompatActivity() {
     }
 
     private fun requestCurrentLocation() {
-        if (!hasLocationPermission) return
+        if (!hasLocationPermission) {
+            setFallbackLocationIfBlank()
+            return
+        }
         try {
             fusedLocationClient.getCurrentLocation(Priority.PRIORITY_BALANCED_POWER_ACCURACY, null)
                 .addOnSuccessListener { location: Location? ->
@@ -221,8 +238,8 @@ class CreateGroupActivity : AppCompatActivity() {
             description = description,
             location = location,
             maxPeople = maxPeopleText.toInt(),
-            latitude = lastKnownLatitude,
-            longitude = lastKnownLongitude
+            latitude = lastKnownLatitude ?: DEFAULT_LAT,
+            longitude = lastKnownLongitude ?: DEFAULT_LNG
         )
         viewModel.submitGroup(request)
     }

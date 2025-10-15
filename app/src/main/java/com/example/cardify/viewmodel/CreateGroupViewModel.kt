@@ -19,14 +19,18 @@ class CreateGroupViewModel(
     private val _isSubmitting = MutableLiveData(false)
     val isSubmitting: LiveData<Boolean> = _isSubmitting
 
-    private val _creationSuccess = MutableLiveData<Unit>()
-    val creationSuccess: LiveData<Unit> = _creationSuccess
+    private val _creationSuccess = MutableLiveData<CreateGroupRequest?>()
+    val creationSuccess: LiveData<CreateGroupRequest?> = _creationSuccess
 
     private val _errorMessage = MutableLiveData<String?>()
     val errorMessage: LiveData<String?> = _errorMessage
 
     fun clearError() {
         _errorMessage.value = null
+    }
+
+    fun clearSuccess() {
+        _creationSuccess.value = null
     }
 
     fun validateInput(
@@ -52,7 +56,7 @@ class CreateGroupViewModel(
         viewModelScope.launch {
             val result = repository.createGroup(request)
             if (result.isSuccess) {
-                _creationSuccess.postValue(Unit)
+                _creationSuccess.postValue(request)
             } else {
                 _errorMessage.postValue(
                     result.exceptionOrNull()?.localizedMessage

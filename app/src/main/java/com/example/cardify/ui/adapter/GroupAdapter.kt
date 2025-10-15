@@ -1,6 +1,5 @@
 package com.example.cardify.ui.adapter
 
-import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -11,7 +10,7 @@ import com.example.cardify.data.Group
 import com.example.cardify.databinding.ItemGroupBinding
 
 /**
- * RecyclerView adapter that displays groups and highlights shared tags.
+ * RecyclerView adapter that displays created or fetched groups.
  */
 class GroupAdapter(
     private val onItemClick: (Group) -> Unit
@@ -34,44 +33,28 @@ class GroupAdapter(
         fun bind(group: Group) {
             binding.root.setOnClickListener { onItemClick(group) }
 
-            binding.groupNameText.text = group.name
-            binding.groupNameText.setTypeface(
-                null,
-                if (group.sharedTagsCount > 0) Typeface.BOLD else Typeface.NORMAL
-            )
-
             val context = binding.root.context
-            binding.groupTagsText.text = context.getString(
-                R.string.group_tags_label,
-                group.tags.joinToString(separator = ", ")
-            )
-            binding.groupSharedTagsText.text = context.getString(
-                R.string.group_shared_tags_label,
-                group.sharedTagsCount
-            )
-            binding.groupDistanceText.text = formatDistance(group.distanceMeters)
-        }
+            binding.groupTitleText.text = group.title
+            binding.groupDescriptionText.text = group.description
+            binding.groupLocationText.text = group.location
+            binding.groupMaxPeopleText.text =
+                context.getString(R.string.group_max_people_format, group.maxPeople)
 
-        private fun formatDistance(distanceMeters: Double): String {
-            val context = binding.root.context
-            return if (distanceMeters >= 1_000) {
-                context.getString(
-                    R.string.group_distance_km,
-                    distanceMeters / 1_000.0
-                )
+            val distanceText = if (group.distanceMeters >= 1_000) {
+                context.getString(R.string.group_distance_km, group.distanceMeters / 1_000.0)
             } else {
-                context.getString(
-                    R.string.group_distance_m,
-                    distanceMeters
-                )
+                context.getString(R.string.group_distance_m, group.distanceMeters)
             }
+            binding.groupDistanceText.text = distanceText
         }
     }
 
     companion object {
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Group>() {
             override fun areItemsTheSame(oldItem: Group, newItem: Group): Boolean =
-                oldItem.name == newItem.name
+                oldItem.title == newItem.title &&
+                    oldItem.latitude == newItem.latitude &&
+                    oldItem.longitude == newItem.longitude
 
             override fun areContentsTheSame(oldItem: Group, newItem: Group): Boolean =
                 oldItem == newItem

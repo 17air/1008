@@ -34,17 +34,52 @@ class MapListFragment : Fragment(), OnMapReadyCallback {
     private val groupAdapter = GroupAdapter { group -> onGroupSelected(group) }
 
     private var user: User = User(
-        tags = USER_TAGS,
+        tags = emptyList(),
         latitude = DEFAULT_LAT,
         longitude = DEFAULT_LNG
     )
 
     private val baseGroups = listOf(
-        Group("Hiking Club", listOf("등산", "야외활동"), 37.5796, 126.9770),
-        Group("Movie Fans", listOf("영화", "토론"), 37.5600, 126.9830),
-        Group("Runner Group", listOf("러닝", "산책"), 37.5510, 126.9880),
-        Group("Cafe Study", listOf("스터디", "카페"), 37.5700, 126.9920),
-        Group("Boardgame Night", listOf("보드게임", "취미"), 37.5650, 126.9768)
+        Group(
+            title = "Hiking Club",
+            description = "북악산을 함께 오르는 주말 산행 모임입니다.",
+            location = "서울 종로구 북악산 일대",
+            maxPeople = 12,
+            latitude = 37.5796,
+            longitude = 126.9770
+        ),
+        Group(
+            title = "Movie Fans",
+            description = "최신 영화를 보고 토론하는 소규모 모임입니다.",
+            location = "서울 중구 CGV 명동",
+            maxPeople = 10,
+            latitude = 37.5600,
+            longitude = 126.9830
+        ),
+        Group(
+            title = "Runner Group",
+            description = "한강 러닝을 함께 즐기는 저녁 모임입니다.",
+            location = "서울 용산구 이촌한강공원",
+            maxPeople = 20,
+            latitude = 37.5510,
+            longitude = 126.9880
+        ),
+        Group(
+            title = "Cafe Study",
+            description = "도심 카페에서 스터디를 진행하는 모임입니다.",
+            location = "서울 종로구 카페거리",
+            maxPeople = 8,
+            latitude = 37.5700,
+            longitude = 126.9920
+        ),
+        Group(
+            title = "Boardgame Night",
+            description = "보드게임으로 친목을 다지는 저녁 모임입니다.",
+            location = "서울 중구 보드게임 카페",
+            maxPeople = 14,
+            latitude = 37.5650,
+            longitude = 126.9768
+        )
     )
 
     private var currentGroups: List<Group> = emptyList()
@@ -117,25 +152,17 @@ class MapListFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun refreshGroups() {
-        val userTagSet = user.tags.toSet()
         currentGroups = baseGroups
             .map { group ->
-                val sharedTagsCount = group.tags.count { it in userTagSet }
                 val distance = Geo.haversineDistance(
                     user.latitude,
                     user.longitude,
                     group.latitude,
                     group.longitude
                 )
-                group.copy(
-                    distanceMeters = distance,
-                    sharedTagsCount = sharedTagsCount
-                )
+                group.copy(distanceMeters = distance)
             }
-            .sortedWith(
-                compareByDescending<Group> { it.sharedTagsCount }
-                    .thenBy { it.distanceMeters }
-            )
+            .sortedBy { it.distanceMeters }
 
         groupAdapter.submitList(currentGroups)
         mapBinder?.renderMarkers(user, currentGroups)
@@ -167,6 +194,5 @@ class MapListFragment : Fragment(), OnMapReadyCallback {
         const val TAG: String = "MapListFragment"
         private const val DEFAULT_LAT = 37.5665
         private const val DEFAULT_LNG = 126.9780
-        private val USER_TAGS = listOf("등산", "산책")
     }
 }
