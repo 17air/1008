@@ -26,6 +26,8 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.firestore.ktx.firestore
 
 class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -35,9 +37,10 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var recyclerView: RecyclerView
     private lateinit var groupAdapter: GroupAdapter
 
-    private val firestore: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
+    private val firestore: FirebaseFirestore by lazy { Firebase.firestore }
     private val groups = mutableListOf<Group>()
     private var hasCenteredOnGroups = false
+    private var isFirebaseReady = false
 
     private val createGroupLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -71,7 +74,19 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_group_map)
 
-        FirebaseApp.initializeApp(this)
+        val existingApps = FirebaseApp.getApps(this)
+        if (existingApps.isEmpty()) {
+            FirebaseApp.initializeApp(this)
+        }
+        isFirebaseReady = FirebaseApp.getApps(this).isNotEmpty()
+        if (!isFirebaseReady) {
+            Log.e(TAG, "Firebase is not configured. Skipping remote group fetch.")
+            Toast.makeText(
+                this,
+                "소모임 데이터를 불러오려면 Firebase 설정이 필요합니다.",
+                Toast.LENGTH_LONG
+            ).show()
+        }
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
@@ -91,7 +106,9 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
             createGroupLauncher.launch(intent)
         }
 
-        fetchGroupsFromFirestore()
+        if (isFirebaseReady) {
+            fetchGroupsFromFirestore()
+        }
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
