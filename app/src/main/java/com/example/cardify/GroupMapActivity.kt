@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -21,22 +22,22 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.firebase.FirebaseApp
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.GeoPoint
 
 class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
 
-    private lateinit var map: GoogleMap
+    private var map: GoogleMap? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var createButton: Button
     private lateinit var recyclerView: RecyclerView
     private lateinit var groupAdapter: GroupAdapter
 
-    private var currentLocation: Location? = null
-
-    private val groups = mutableListOf(
-        Group("한강 러닝 모임", "매주 토요일 한강에서 러닝해요", 10),
-        Group("보드게임 모임", "종로에서 보드게임 즐겨요", 8),
-        Group("스터디 모임", "IT 취준생 스터디", 6)
-    )
+    private val firestore: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
+    private val groups = mutableListOf<Group>()
+    private var hasCenteredOnGroups = false
 
     private val createGroupLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -47,26 +48,21 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
             val desc = data.getStringExtra("desc") ?: ""
             val maxPeopleText = data.getStringExtra("maxPeople") ?: ""
             val maxPeople = maxPeopleText.toIntOrNull() ?: 0
+            val latitude = data.getDoubleExtra("latitude", Double.NaN)
+            val longitude = data.getDoubleExtra("longitude", Double.NaN)
 
-            updateCurrentLocation { location ->
-                if (location != null) {
-                    val newGroup = Group(title, desc, maxPeople)
-                    groups.add(0, newGroup)
-                    groupAdapter.submitList(groups.toList())
+            if (!latitude.isNaN() && !longitude.isNaN()) {
+                val newGroup = Group(title, desc, maxPeople, latitude, longitude)
+                groups.add(0, newGroup)
+                groupAdapter.submitList(groups.toList())
+                renderMarkers()
+                hasCenteredOnGroups = true
 
-                    val latLng = LatLng(location.latitude, location.longitude)
-                    map.addMarker(
-                        MarkerOptions()
-                            .position(latLng)
-                            .title(title)
-                            .snippet(desc)
-                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET))
-                    )
-                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
-                    Toast.makeText(this, "새 소모임이 등록되었습니다.", Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(this, "현재 위치를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show()
-                }
+                val latLng = LatLng(latitude, longitude)
+                map?.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
+                Toast.makeText(this, "새 소모임이 등록되었습니다.", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "현재 위치를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -74,6 +70,8 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_group_map)
+
+        FirebaseApp.initializeApp(this)
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
@@ -92,14 +90,20 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
             val intent = Intent(this, CreateGroupActivity::class.java)
             createGroupLauncher.launch(intent)
         }
+
+        fetchGroupsFromFirestore()
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
-        map.uiSettings.isZoomControlsEnabled = true
-        map.uiSettings.isMyLocationButtonEnabled = true
+        map?.uiSettings?.isZoomControlsEnabled = true
+        map?.uiSettings?.isMyLocationButtonEnabled = true
+        map?.setOnMarkerClickListener { marker ->
+            marker.showInfoWindow()
+            false
+        }
         enableMyLocation()
-        addDummyMarkers()
+        renderMarkers()
     }
 
     private fun enableMyLocation() {
@@ -115,11 +119,11 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
             )
             return
         }
-        map.isMyLocationEnabled = true
+        map?.isMyLocationEnabled = true
         updateCurrentLocation { location ->
             if (location != null) {
                 val currentLatLng = LatLng(location.latitude, location.longitude)
-                map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
+                map?.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
             } else {
                 moveToSeoul()
             }
@@ -137,7 +141,6 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
         }
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location ->
-                currentLocation = location
                 onLocation(location)
             }
             .addOnFailureListener {
@@ -159,35 +162,88 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    private fun addDummyMarkers() {
-        val seoul = LatLng(37.566, 126.978)
-        val offsets = listOf(
-            Pair(0.002, 0.003),
-            Pair(-0.002, -0.001),
-            Pair(0.001, -0.003)
-        )
+    private fun renderMarkers() {
+        val googleMap = map ?: return
+        googleMap.clear()
 
-        groups.forEachIndexed { index, group ->
-            val latLng = LatLng(
-                seoul.latitude + offsets[index % offsets.size].first,
-                seoul.longitude + offsets[index % offsets.size].second
-            )
-            map.addMarker(
-                MarkerOptions()
-                    .position(latLng)
-                    .title(group.title)
-                    .snippet(group.description)
-            )
+        groups.forEach { group ->
+            val lat = group.latitude
+            val lng = group.longitude
+            if (lat != null && lng != null) {
+                googleMap.addMarker(
+                    MarkerOptions()
+                        .position(LatLng(lat, lng))
+                        .title(group.title)
+                        .snippet(group.description)
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET))
+                )
+            }
         }
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(seoul, 13f))
+
+        if (!hasCenteredOnGroups && groups.isNotEmpty()) {
+            val first = groups.firstOrNull { it.latitude != null && it.longitude != null }
+            if (first != null) {
+                googleMap.moveCamera(
+                    CameraUpdateFactory.newLatLngZoom(
+                        LatLng(first.latitude!!, first.longitude!!),
+                        13f
+                    )
+                )
+                hasCenteredOnGroups = true
+            }
+        }
     }
 
     private fun moveToSeoul() {
         val seoul = LatLng(37.566, 126.978)
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(seoul, 13f))
+        map?.moveCamera(CameraUpdateFactory.newLatLngZoom(seoul, 13f))
+    }
+
+    private fun fetchGroupsFromFirestore() {
+        firestore.collection("groups")
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val fetchedGroups = snapshot.documents.mapNotNull { it.toGroup() }
+                groups.clear()
+                groups.addAll(fetchedGroups)
+                groupAdapter.submitList(groups.toList())
+                hasCenteredOnGroups = false
+                renderMarkers()
+            }
+            .addOnFailureListener { error ->
+                Log.e(TAG, "Failed to load groups", error)
+                Toast.makeText(this, "소모임 정보를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show()
+                if (groups.isEmpty()) {
+                    moveToSeoul()
+                }
+            }
     }
 
     companion object {
         private const val REQUEST_LOCATION_PERMISSION = 1001
+        private const val TAG = "GroupMapActivity"
+    }
+
+    private fun DocumentSnapshot.toGroup(): Group? {
+        val title = getString("title") ?: return null
+        val description = getString("description") ?: getString("desc") ?: ""
+        val maxPeople = getLong("maxPeople")?.toInt() ?: 0
+
+        val geoPoint = getGeoPoint("location")
+        val latitude = when {
+            contains("latitude") -> getDouble("latitude")
+            geoPoint != null -> geoPoint.latitude
+            contains("lat") -> getDouble("lat")
+            else -> null
+        }
+        val longitude = when {
+            contains("longitude") -> getDouble("longitude")
+            geoPoint != null -> geoPoint.longitude
+            contains("lng") -> getDouble("lng") ?: getDouble("lon")
+            contains("lon") -> getDouble("lon")
+            else -> null
+        }
+
+        return Group(title, description, maxPeople, latitude, longitude)
     }
 }

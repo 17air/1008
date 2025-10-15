@@ -97,10 +97,18 @@ class CreateGroupActivity : AppCompatActivity() {
             return
         }
 
+        val location = currentLocation
+        if (location == null) {
+            Toast.makeText(this, "현재 위치를 확인 중입니다.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         val data = Intent().apply {
             putExtra("title", title)
             putExtra("desc", desc)
             putExtra("maxPeople", maxPeople)
+            putExtra("latitude", location.latitude)
+            putExtra("longitude", location.longitude)
         }
         setResult(RESULT_OK, data)
         finish()
