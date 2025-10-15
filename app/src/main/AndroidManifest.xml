@@ -1,5 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.cardify">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -18,7 +17,9 @@
             android:value="@string/google_maps_key" />
 
         <activity android:name=".CreateGroupActivity" />
-        <activity android:name=".GroupMapActivity">
+        <activity
+            android:name=".GroupMapActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
