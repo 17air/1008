@@ -6,7 +6,6 @@ package com.example.cardify.data
 data class CreateGroupRequest(
     val title: String,
     val description: String,
-    val dateTime: String,
     val location: String,
     val maxPeople: Int,
     val latitude: Double? = null,

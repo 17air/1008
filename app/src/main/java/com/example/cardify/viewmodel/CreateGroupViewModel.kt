@@ -32,13 +32,11 @@ class CreateGroupViewModel(
     fun validateInput(
         title: String,
         description: String,
-        dateTime: String,
         location: String,
         maxPeopleText: String
     ): Int? {
         if (title.isBlank()) return R.string.error_group_title_required
         if (description.isBlank()) return R.string.error_group_description_required
-        if (dateTime.isBlank()) return R.string.error_group_datetime_required
         if (location.isBlank()) return R.string.error_group_location_required
         val maxPeople = maxPeopleText.toIntOrNull()
             ?: return R.string.error_group_max_people_number

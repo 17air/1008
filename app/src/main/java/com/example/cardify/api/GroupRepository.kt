@@ -21,7 +21,6 @@ class GroupRepository(
                 title = request.title,
                 body = buildString {
                     appendLine(request.description)
-                    appendLine("일시: ${'$'}{request.dateTime}")
                     appendLine("장소: ${'$'}{request.location}")
                     append("정원: ${'$'}{request.maxPeople}명")
                 }.trimEnd(),
