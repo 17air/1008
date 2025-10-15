@@ -8,9 +8,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 /**
  * Provides Retrofit clients for the application.
  */
-object ApiClient {
+object RetrofitClient {
 
-    private const val BASE_URL = "https://api.example.com/" // TODO replace with production endpoint
+    private const val BASE_URL = "https://jsonplaceholder.typicode.com/"
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY

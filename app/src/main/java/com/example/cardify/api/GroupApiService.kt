@@ -1,30 +1,34 @@
 package com.example.cardify.api
 
-import com.example.cardify.data.CreateGroupRequest
-import com.example.cardify.data.Group
+import com.example.cardify.data.PostResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
-import retrofit2.http.Query
 
 /**
- * Retrofit definition for group-related endpoints.
+ * Retrofit definition for group-related endpoints backed by the jsonplaceholder service.
  */
 interface GroupApiService {
 
     /**
-     * Creates a new group with the provided payload.
+     * Creates a new placeholder post to emulate group creation.
      */
-    @POST("groups")
-    suspend fun createGroup(@Body request: CreateGroupRequest): Response<Group>
+    @POST("posts")
+    suspend fun createGroup(@Body request: JsonPlaceholderPostRequest): Response<PostResponse>
 
     /**
-     * Returns nearby groups around the provided coordinate.
+     * Returns placeholder posts that the demo uses as nearby groups.
      */
-    @GET("groups/nearby")
-    suspend fun getNearbyGroups(
-        @Query("lat") latitude: Double,
-        @Query("lng") longitude: Double
-    ): Response<List<Group>>
+    @GET("posts")
+    suspend fun getNearbyGroups(): Response<List<PostResponse>>
 }
+
+/**
+ * Request payload understood by the jsonplaceholder post endpoint.
+ */
+data class JsonPlaceholderPostRequest(
+    val title: String,
+    val body: String,
+    val userId: Int
+)

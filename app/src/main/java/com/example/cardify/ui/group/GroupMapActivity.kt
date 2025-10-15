@@ -6,13 +6,14 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import com.example.cardify.R
-import com.example.cardify.data.Group
+import com.example.cardify.data.PostResponse
 import com.example.cardify.databinding.ActivityGroupMapBinding
 import com.example.cardify.viewmodel.GroupMapViewModel
 import com.google.android.gms.location.LocationServices
@@ -26,6 +27,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.snackbar.Snackbar
+import kotlin.random.Random
 
 /**
  * Displays nearby groups on a Google Map, allowing users to open the create flow.
@@ -42,6 +44,7 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
     private var googleMap: GoogleMap? = null
     private var userLocation: LatLng = LatLng(DEFAULT_LAT, DEFAULT_LNG)
     private var hasLocationPermission: Boolean = false
+    private var latestPosts: List<PostResponse> = emptyList()
 
     private val locationPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
@@ -91,7 +94,7 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
             uiSettings.isMapToolbarEnabled = false
         }
         updateMyLocationLayer()
-        renderGroups(viewModel.groups.value.orEmpty())
+        renderGroups(latestPosts)
     }
 
     private fun setupMapFragment() {
@@ -105,8 +108,9 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun observeViewModel() {
-        viewModel.groups.observe(this) { groups ->
-            renderGroups(groups)
+        viewModel.posts.observe(this) { posts ->
+            latestPosts = posts
+            renderGroups(posts)
         }
         viewModel.isLoading.observe(this) { isLoading ->
             binding.progressBar.isVisible = isLoading
@@ -120,6 +124,11 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
             }
             Snackbar.make(binding.root, displayMessage, Snackbar.LENGTH_LONG).show()
             viewModel.clearError()
+        }
+        viewModel.toastMessage.observe(this) { message ->
+            message ?: return@observe
+            Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+            viewModel.clearToastMessage()
         }
     }
 
@@ -199,14 +208,13 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    private fun renderGroups(groups: List<Group>) {
+    private fun renderGroups(posts: List<PostResponse>) {
         val map = googleMap ?: return
         map.clear()
 
         val boundsBuilder = LatLngBounds.Builder()
         var hasBounds = false
 
-        // Always add a marker for the user's current location so the map provides context
         val userMarker = map.addMarker(
             MarkerOptions()
                 .position(userLocation)
@@ -218,28 +226,13 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
             hasBounds = true
         }
 
-        groups.forEach { group ->
-            val position = LatLng(group.latitude, group.longitude)
-            val snippet = buildString {
-                if (!group.meetingTime.isNullOrBlank()) {
-                    append(getString(R.string.group_marker_time, group.meetingTime))
-                }
-                if (group.currentMembers != null && group.maxMembers != null) {
-                    if (isNotEmpty()) append('\n')
-                    append(
-                        getString(
-                            R.string.group_marker_members,
-                            group.currentMembers,
-                            group.maxMembers
-                        )
-                    )
-                }
-            }
+        posts.forEachIndexed { index, post ->
+            val position = positionForPost(post, index)
             map.addMarker(
                 MarkerOptions()
                     .position(position)
-                    .title(group.name)
-                    .snippet(snippet.ifBlank { null })
+                    .title(post.title.ifBlank { getString(R.string.app_name) })
+                    .snippet(post.body.takeIf { it.isNotBlank() })
             )
             boundsBuilder.include(position)
             hasBounds = true
@@ -259,14 +252,23 @@ class GroupMapActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+    private fun positionForPost(post: PostResponse, index: Int): LatLng {
+        val seed = if (post.id != 0) post.id else (index + 1) * 7919
+        val random = Random(seed)
+        val latOffset = (random.nextDouble() - 0.5) * 2 * MARKER_OFFSET_DEGREES
+        val lngOffset = (random.nextDouble() - 0.5) * 2 * MARKER_OFFSET_DEGREES
+        return LatLng(DEFAULT_LAT + latOffset, DEFAULT_LNG + lngOffset)
+    }
+
     private fun showPermissionDeniedMessage() {
         Snackbar.make(binding.root, R.string.location_permission_rationale, Snackbar.LENGTH_LONG).show()
     }
 
     companion object {
-        private const val DEFAULT_LAT = 37.5665
-        private const val DEFAULT_LNG = 126.9780
+        private const val DEFAULT_LAT = 37.566
+        private const val DEFAULT_LNG = 126.978
         private const val DEFAULT_ZOOM = 13f
         private const val MAP_PADDING = 120
+        private const val MARKER_OFFSET_DEGREES = 0.01
     }
 }
