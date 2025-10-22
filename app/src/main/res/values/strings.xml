@@ -10,7 +10,7 @@
     <string name="group_max_people">최대 인원</string>
     <string name="location_not_selected">현재 위치를 불러오세요.</string>
     <string name="use_current_location">현재 위치 사용</string>
-    <string name="location_selected_format">위치: %.5f, %.5f</string>
+    <string name="location_selected_format">위치: %1$.5f, %2$.5f</string>
     <string name="join_group">참여하기</string>
     <string name="leave_group">나가기</string>
     <string name="auth_failed">사용자 정보를 초기화할 수 없습니다.</string>
