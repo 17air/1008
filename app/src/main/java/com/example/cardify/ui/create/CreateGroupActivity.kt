@@ -11,7 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import com.example.cardify.R
 import com.example.cardify.UserSession
-import com.example.cardify.data.FirestoreProvider
+import com.example.cardify.data.LocalGroupRepository
 import com.example.cardify.data.model.Group
 import com.example.cardify.data.model.Member
 import com.example.cardify.databinding.ActivityCreateGroupBinding
@@ -152,7 +152,7 @@ class CreateGroupActivity : AppCompatActivity() {
 
         binding.createProgress.isVisible = true
         binding.createGroupButton.isEnabled = false
-        FirestoreProvider.createGroup(
+        LocalGroupRepository.createGroup(
             group,
             ownerMember,
             onSuccess = { id ->

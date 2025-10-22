@@ -13,13 +13,15 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cardify.R
 import com.example.cardify.UserSession
-import com.example.cardify.data.FirestoreProvider
+import com.example.cardify.data.LocalGroupRepository
+import com.example.cardify.data.LocalGroupRepository.ListenerRegistration
 import com.example.cardify.data.model.Group
 import com.example.cardify.databinding.ActivityMainBinding
 import com.example.cardify.ui.create.CreateGroupActivity
 import com.example.cardify.ui.detail.GroupDetailActivity
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -27,8 +29,6 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.firebase.firestore.ListenerRegistration
-import com.google.android.gms.location.Priority
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
@@ -123,7 +123,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     private fun subscribeToGroups() {
         groupListener?.remove()
-        groupListener = FirestoreProvider.observeGroups(
+        groupListener = LocalGroupRepository.observeGroups(
             onSuccess = { groups ->
                 runOnUiThread {
                     binding.loadingIndicator.isVisible = false

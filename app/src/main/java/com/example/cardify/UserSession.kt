@@ -1,55 +1,56 @@
 package com.example.cardify
 
-import android.util.Log
-import com.google.firebase.auth.FirebaseAuth
-import java.util.concurrent.CopyOnWriteArrayList
+import android.content.Context
+import android.content.SharedPreferences
+import java.util.UUID
 
 object UserSession {
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
-    private val listeners = CopyOnWriteArrayList<(Boolean) -> Unit>()
-    @Volatile
-    private var initializing = false
+    private const val PREFS_NAME = "cardify_session"
+    private const val KEY_USER_ID = "user_id"
+    private const val KEY_USER_NAME = "user_name"
 
-    fun initialize(onReady: (Boolean) -> Unit = {}) {
-        if (auth.currentUser != null) {
-            onReady(true)
-            return
-        }
-        listeners.add(onReady)
-        if (!initializing) {
-            synchronized(this) {
-                if (!initializing) {
-                    initializing = true
-                    auth.signInAnonymously()
-                        .addOnCompleteListener { task ->
-                            initializing = false
-                            if (!task.isSuccessful) {
-                                Log.e("UserSession", "Anonymous sign-in failed", task.exception)
-                            }
-                            notifyListeners(task.isSuccessful)
-                        }
-                }
-            }
+    private var prefs: SharedPreferences? = null
+
+    fun init(context: Context) {
+        if (prefs == null) {
+            prefs = context.applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            ensureUser()
         }
     }
 
-    private fun notifyListeners(success: Boolean) {
-        listeners.forEach { listener ->
-            listener(success)
+    fun initialize(onReady: (Boolean) -> Unit = {}) {
+        val initialized = prefs != null
+        if (initialized) {
+            ensureUser()
         }
-        listeners.clear()
+        onReady(initialized)
+    }
+
+    private fun ensureUser() {
+        val preferences = prefs ?: return
+        if (!preferences.contains(KEY_USER_ID)) {
+            val id = UUID.randomUUID().toString()
+            val suffix = id.takeLast(4)
+            val defaultName = "게스트$suffix"
+            preferences.edit()
+                .putString(KEY_USER_ID, id)
+                .putString(KEY_USER_NAME, defaultName)
+                .apply()
+        } else if (!preferences.contains(KEY_USER_NAME)) {
+            val id = preferences.getString(KEY_USER_ID, "").orEmpty()
+            val suffix = id.takeLast(4).ifEmpty { "0000" }
+            preferences.edit()
+                .putString(KEY_USER_NAME, "게스트$suffix")
+                .apply()
+        }
     }
 
     val userId: String
-        get() = auth.currentUser?.uid.orEmpty()
+        get() = prefs?.getString(KEY_USER_ID, "").orEmpty()
 
-    val userName: String
-        get() {
-            val displayName = auth.currentUser?.displayName
-            if (!displayName.isNullOrBlank()) {
-                return displayName
-            }
-            val suffix = userId.takeLast(4).ifEmpty { "0000" }
-            return "게스트$suffix"
+    var userName: String
+        get() = prefs?.getString(KEY_USER_NAME, "").orEmpty()
+        set(value) {
+            prefs?.edit()?.putString(KEY_USER_NAME, value)?.apply()
         }
 }

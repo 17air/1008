@@ -1,23 +1,23 @@
 # Cardify
 
-Cardify is a Kotlin-based Android demo that combines Google Maps, Firebase Authentication, and Cloud Firestore to power a location-aware community experience. Users can discover nearby groups, inspect membership details, and collaborate in real time as participant counts stay synchronized across devices.
+Cardify is a Kotlin-based Android demo that combines Google Maps and a lightweight in-memory data layer to power a location-aware community experience. Users can discover nearby groups, inspect membership details, and manage participation entirely offline without any backend services.
 
 ## Features
-- 🔐 Automatic anonymous sign-in with Firebase Authentication
-- 🗺️ Google Maps view that plots every Firestore group as a marker
+- 🗺️ Google Maps view that plots every locally stored group as a marker
 - 📍 Distance-aware RecyclerView listing that mirrors the map
-- 🧑‍🤝‍🧑 Real-time participant counts via Firestore snapshot listeners
+- 🧑‍🤝‍🧑 Real-time participant counts powered by an observable in-memory repository
 - ✍️ Group creation workflow that stores metadata, coordinates, and owner membership
-- ✅ Join/leave actions executed inside Firestore transactions with optimistic UI feedback
+- ✅ Join/leave actions executed atomically inside the local repository with instant feedback
+- 🌱 Preloaded Seoul-area sample groups so the experience works immediately offline
 
 ## Project Structure
 ```
 app/
  ├─ src/main/java/com/example/cardify/
- │   ├─ CardifyApp.kt            # Firebase initialization & persistence
- │   ├─ UserSession.kt           # Anonymous auth helper
+ │   ├─ CardifyApp.kt            # App-wide initialization for session & data store
+ │   ├─ UserSession.kt           # Anonymous local user helper
  │   ├─ data/
- │   │   ├─ FirestoreProvider.kt # Realtime listeners & transactions
+ │   │   ├─ LocalGroupRepository.kt # In-memory realtime store & transactions
  │   │   └─ model/
  │   │       ├─ Group.kt
  │   │       └─ Member.kt
@@ -28,12 +28,6 @@ app/
  └─ src/main/res/layout/…        # Material 3 view binding layouts
 ```
 
-## Firebase Setup
-1. Create a Firebase project and enable **Authentication → Anonymous sign-in** and **Firestore Database**.
-2. Download your project's `google-services.json` file and place it in the `app/` directory.
-3. (Optional) Deploy the provided [`firestore.rules`](firestore.rules) draft to enforce basic ownership checks.
-4. Sync Gradle so the Google Services plugin can wire the configuration.
-
 ## Maps API
 1. Enable the **Maps SDK for Android** in Google Cloud Console.
 2. Update `app/src/main/res/values/strings.xml` with your Maps API key (`google_maps_key`).
@@ -42,6 +36,7 @@ app/
 1. Open the project in **Android Studio Hedgehog (or newer)**.
 2. Sync Gradle and install dependencies.
 3. Build and run on a Google Play Services-enabled device or emulator.
+4. All group information lives in memory, so restarting the app resets it to the bundled sample data.
 
 ## License
 This project is provided as-is for demo purposes.

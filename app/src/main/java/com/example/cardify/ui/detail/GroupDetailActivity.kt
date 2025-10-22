@@ -8,11 +8,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.example.cardify.R
 import com.example.cardify.UserSession
-import com.example.cardify.data.FirestoreProvider
+import com.example.cardify.data.LocalGroupRepository
+import com.example.cardify.data.LocalGroupRepository.GroupFullException
+import com.example.cardify.data.LocalGroupRepository.ListenerRegistration
 import com.example.cardify.data.model.Group
 import com.example.cardify.data.model.Member
 import com.example.cardify.databinding.ActivityGroupDetailBinding
-import com.google.firebase.firestore.ListenerRegistration
 
 class GroupDetailActivity : AppCompatActivity() {
 
@@ -60,7 +61,7 @@ class GroupDetailActivity : AppCompatActivity() {
 
     private fun subscribeToGroup() {
         groupListener?.remove()
-        groupListener = FirestoreProvider.observeGroup(
+        groupListener = LocalGroupRepository.observeGroup(
             groupId,
             onSuccess = { group ->
                 runOnUiThread {
@@ -115,7 +116,7 @@ class GroupDetailActivity : AppCompatActivity() {
             return
         }
         membershipListener?.remove()
-        membershipListener = FirestoreProvider.observeMembership(
+        membershipListener = LocalGroupRepository.observeMembership(
             groupId,
             userId,
             onSuccess = { joined ->
@@ -145,7 +146,7 @@ class GroupDetailActivity : AppCompatActivity() {
         }
         setProcessing(true)
         val member = Member(userId = userId, name = UserSession.userName)
-        FirestoreProvider.joinGroup(
+        LocalGroupRepository.joinGroup(
             groupId,
             member,
             onSuccess = {
@@ -170,7 +171,7 @@ class GroupDetailActivity : AppCompatActivity() {
             return
         }
         setProcessing(true)
-        FirestoreProvider.leaveGroup(
+        LocalGroupRepository.leaveGroup(
             groupId,
             userId,
             onSuccess = {
@@ -191,8 +192,7 @@ class GroupDetailActivity : AppCompatActivity() {
     private fun mapJoinError(exception: Exception): Int {
         val message = exception.message.orEmpty()
         return when {
-            exception is com.google.firebase.firestore.FirebaseFirestoreException &&
-                exception.code == com.google.firebase.firestore.FirebaseFirestoreException.Code.ABORTED -> R.string.group_full
+            exception is GroupFullException -> R.string.group_full
             message.contains("full", ignoreCase = true) -> R.string.group_full
             else -> R.string.unknown_error
         }
