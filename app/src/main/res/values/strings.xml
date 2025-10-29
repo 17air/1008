@@ -13,7 +13,7 @@
     <string name="group_welcome_format">%1$s님, 어떤 모임을 찾고 계신가요?</string>
     <string name="group_create_action">소모임 생성</string>
     <string name="group_list_empty">등록된 소모임이 없습니다. 새로운 소모임을 만들어보세요.</string>
-    <string name="group_list_all_groups">All Groups (%1$d)</string>
+    <string name="group_list_all_groups">전체 그룹(%1$d)</string>
     <string name="no_groups_found">표시할 소모임이 없습니다.</string>
     <string name="group_recommended_badge">추천</string>
     <string name="group_date_format">모임 일정: %1$s</string>
@@ -61,8 +61,8 @@
 
     <string name="map_groups_count_format">주변 소모임 %1$d개</string>
     <string name="map_groups_hint">지도를 탐색하거나 목록을 열어 자세히 확인하세요.</string>
-    <string name="map_open_list">All Groups (%1$d)</string>
-    <string name="map_open_list_secondary">All Groups</string>
+    <string name="map_open_list">전체 그룹(%1$d)</string>
+    <string name="map_open_list_secondary">추가 메뉴 열기</string>
     <string name="action_joined_groups">가입된 소모임</string>
     <string name="action_joined_groups_hint">참여 중인 모임을 확인해요.</string>
     <string name="action_create_group">소모임 생성</string>
