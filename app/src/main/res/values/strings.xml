@@ -19,6 +19,8 @@
     <string name="group_list_similar_empty">추천할 소모임이 아직 없습니다.</string>
     <string name="group_list_radius_header">반경 5km 이내 그룹(%1$d개)</string>
     <string name="group_list_radius_empty">현재 위치 기준 5km 이내 소모임이 없습니다.</string>
+    <string name="group_list_similar_entry">%1$s · %2$s</string>
+    <string name="group_list_radius_entry">%1$s · %2$s</string>
     <string name="no_groups_found">표시할 소모임이 없습니다.</string>
     <string name="group_recommended_badge">추천</string>
     <string name="group_date_format">모임 일정: %1$s</string>
@@ -54,6 +56,8 @@
     <string name="group_max_people">최대 인원</string>
     <string name="recommended_tags_none">추천할 태그가 없습니다.</string>
     <string name="use_current_location">현재 위치 사용</string>
+    <string name="group_tags_empty_inline">태그 없음</string>
+    <string name="group_distance_short_format">%1$.1fkm</string>
 
     <string name="auth_failed">사용자 정보를 초기화할 수 없습니다.</string>
     <string name="unknown_error">문제가 발생했습니다. 잠시 후 다시 시도하세요.</string>

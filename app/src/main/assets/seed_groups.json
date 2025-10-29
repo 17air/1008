@@ -1,762 +1,952 @@
 [
   {
     "id": "seed-00",
-    "title": "서울 러닝 크루 1",
-    "description": "서울 곳곳에서 함께 러닝 활동을 즐겨요. 새로운 친구들과 러닝하며 친목을 다져봐요.",
-    "date": "매주 토요일 8시",
+    "title": "망원동 새벽 러닝 & 브런치",
+    "description": "토요일 아침 망원한강공원에서 7km 러닝 후 근처 카페에서 브런치를 즐겨요.",
+    "date": "토요일 07:00",
     "leaderId": "leader_00",
-    "leaderName": "서울모임장1",
+    "leaderName": "지훈",
     "tags": [
       "운동",
       "러닝",
-      "건강"
+      "브런치"
     ],
     "members": [
       "leader_00"
     ],
-    "latitude": 37.572308,
-    "longitude": 126.866003,
-    "createdAt": 1717286400000
+    "latitude": 37.5552,
+    "longitude": 126.9105,
+    "createdAt": 1718000000000
   },
   {
     "id": "seed-01",
-    "title": "서울 등산 크루 2",
-    "description": "서울 곳곳에서 함께 등산 활동을 즐겨요. 새로운 친구들과 등산하며 친목을 다져봐요.",
-    "date": "매주 토요일 9시",
+    "title": "성수동 공방 탐방 데이",
+    "description": "성수의 공방과 편집숍을 함께 돌며 소규모 제작자들의 이야기를 듣습니다.",
+    "date": "일요일 13:00",
     "leaderId": "leader_01",
-    "leaderName": "서울모임장2",
+    "leaderName": "세연",
     "tags": [
-      "운동",
-      "등산",
-      "자연"
+      "문화",
+      "투어",
+      "라이프스타일"
     ],
     "members": [
       "leader_01"
     ],
-    "latitude": 37.514005,
-    "longitude": 126.913571,
-    "createdAt": 1717282800000
+    "latitude": 37.5444,
+    "longitude": 127.0555,
+    "createdAt": 1717996400000
   },
   {
     "id": "seed-02",
-    "title": "서울 카페 크루 3",
-    "description": "서울 곳곳에서 함께 카페 활동을 즐겨요. 새로운 친구들과 카페하며 친목을 다져봐요.",
-    "date": "매주 토요일 10시",
+    "title": "홍대 인디 밴드 덕질러 모임",
+    "description": "인디 공연을 함께 보고, 공연 후 소감과 정보를 나누는 음악 덕후들의 모임입니다.",
+    "date": "금요일 20:00",
     "leaderId": "leader_02",
-    "leaderName": "서울모임장3",
+    "leaderName": "민호",
     "tags": [
-      "카페",
-      "수다",
+      "음악",
+      "공연",
       "친목"
     ],
     "members": [
       "leader_02"
     ],
-    "latitude": 37.587835,
-    "longitude": 127.022408,
-    "createdAt": 1717279200000
+    "latitude": 37.5572,
+    "longitude": 126.9243,
+    "createdAt": 1717992800000
   },
   {
     "id": "seed-03",
-    "title": "서울 스터디 크루 4",
-    "description": "서울 곳곳에서 함께 스터디 활동을 즐겨요. 새로운 친구들과 스터디하며 친목을 다져봐요.",
-    "date": "매주 토요일 11시",
+    "title": "연남동 필름 사진 워크",
+    "description": "필름 카메라로 골목 풍경을 찍고 서로의 작품을 공유해요.",
+    "date": "일요일 10:30",
     "leaderId": "leader_03",
-    "leaderName": "서울모임장4",
+    "leaderName": "다윤",
     "tags": [
-      "스터디",
-      "자기계발",
-      "공부"
+      "사진",
+      "필름",
+      "산책"
     ],
     "members": [
       "leader_03"
     ],
-    "latitude": 37.612749,
-    "longitude": 126.880865,
-    "createdAt": 1717275600000
+    "latitude": 37.5661,
+    "longitude": 126.9213,
+    "createdAt": 1717989200000
   },
   {
     "id": "seed-04",
-    "title": "서울 맛집 크루 5",
-    "description": "서울 곳곳에서 함께 맛집 활동을 즐겨요. 새로운 친구들과 맛집하며 친목을 다져봐요.",
-    "date": "매주 토요일 12시",
+    "title": "이태원 세계 요리 스터디",
+    "description": "각자 좋아하는 나라의 요리를 소개하고 작은 시식회를 엽니다.",
+    "date": "수요일 19:00",
     "leaderId": "leader_04",
-    "leaderName": "서울모임장5",
+    "leaderName": "제이",
     "tags": [
-      "맛집",
-      "미식",
-      "친목"
+      "요리",
+      "세계음식",
+      "문화"
     ],
     "members": [
       "leader_04"
     ],
-    "latitude": 37.537507,
-    "longitude": 126.867151,
-    "createdAt": 1717272000000
+    "latitude": 37.5346,
+    "longitude": 126.9946,
+    "createdAt": 1717985600000
   },
   {
     "id": "seed-05",
-    "title": "서울 사진 크루 6",
-    "description": "서울 곳곳에서 함께 사진 활동을 즐겨요. 새로운 친구들과 사진하며 친목을 다져봐요.",
-    "date": "매주 토요일 13시",
+    "title": "한남동 재즈 드롭인",
+    "description": "주중 저녁, 로컬 재즈 바를 함께 찾아다니며 음악을 즐깁니다.",
+    "date": "화요일 20:00",
     "leaderId": "leader_05",
-    "leaderName": "서울모임장6",
+    "leaderName": "채린",
     "tags": [
-      "사진",
-      "취미",
-      "전시"
+      "음악",
+      "재즈",
+      "야간"
     ],
     "members": [
       "leader_05"
     ],
-    "latitude": 37.504982,
-    "longitude": 126.981285,
-    "createdAt": 1717268400000
+    "latitude": 37.5349,
+    "longitude": 127.0054,
+    "createdAt": 1717982000000
   },
   {
     "id": "seed-06",
-    "title": "서울 요가 크루 7",
-    "description": "서울 곳곳에서 함께 요가 활동을 즐겨요. 새로운 친구들과 요가하며 친목을 다져봐요.",
-    "date": "매주 토요일 14시",
+    "title": "잠실 석촌호수 노르딕워킹",
+    "description": "석촌호수 둘레를 노르딕 워킹으로 천천히 걸으며 체력과 자세를 다잡아요.",
+    "date": "목요일 08:00",
     "leaderId": "leader_06",
-    "leaderName": "서울모임장7",
+    "leaderName": "승진",
+    "tags": [
+      "운동",
+      "걷기",
+      "건강"
+    ],
+    "members": [
+      "leader_06"
+    ],
+    "latitude": 37.5113,
+    "longitude": 127.0981,
+    "createdAt": 1717978400000
+  },
+  {
+    "id": "seed-07",
+    "title": "강남역 모닝 커피 토크",
+    "description": "출근 전 30분 커피 타임으로 서로의 하루 계획을 나눕니다.",
+    "date": "평일 08:00",
+    "leaderId": "leader_07",
+    "leaderName": "소연",
+    "tags": [
+      "커피",
+      "네트워킹",
+      "출근길"
+    ],
+    "members": [
+      "leader_07"
+    ],
+    "latitude": 37.4979,
+    "longitude": 127.0285,
+    "createdAt": 1717974800000
+  },
+  {
+    "id": "seed-08",
+    "title": "삼성동 야간 요가",
+    "description": "퇴근 후 실내에서 라이트 끄고 진행하는 릴렉스 요가 클래스.",
+    "date": "목요일 21:00",
+    "leaderId": "leader_08",
+    "leaderName": "현우",
     "tags": [
       "운동",
       "요가",
       "힐링"
     ],
     "members": [
-      "leader_06"
-    ],
-    "latitude": 37.474246,
-    "longitude": 126.907721,
-    "createdAt": 1717264800000
-  },
-  {
-    "id": "seed-07",
-    "title": "서울 보드게임 크루 8",
-    "description": "서울 곳곳에서 함께 보드게임 활동을 즐겨요. 새로운 친구들과 보드게임하며 친목을 다져봐요.",
-    "date": "매주 토요일 15시",
-    "leaderId": "leader_07",
-    "leaderName": "서울모임장8",
-    "tags": [
-      "보드게임",
-      "취미",
-      "친목"
-    ],
-    "members": [
-      "leader_07"
-    ],
-    "latitude": 37.573982,
-    "longitude": 126.990786,
-    "createdAt": 1717261200000
-  },
-  {
-    "id": "seed-08",
-    "title": "서울 플로깅 크루 9",
-    "description": "서울 곳곳에서 함께 플로깅 활동을 즐겨요. 새로운 친구들과 플로깅하며 친목을 다져봐요.",
-    "date": "매주 토요일 16시",
-    "leaderId": "leader_08",
-    "leaderName": "서울모임장9",
-    "tags": [
-      "환경",
-      "운동",
-      "걷기"
-    ],
-    "members": [
       "leader_08"
     ],
-    "latitude": 37.50527,
-    "longitude": 127.001424,
-    "createdAt": 1717257600000
+    "latitude": 37.5147,
+    "longitude": 127.0601,
+    "createdAt": 1717971200000
   },
   {
     "id": "seed-09",
-    "title": "서울 뮤지컬 크루 10",
-    "description": "서울 곳곳에서 함께 뮤지컬 활동을 즐겨요. 새로운 친구들과 뮤지컬하며 친목을 다져봐요.",
-    "date": "매주 토요일 17시",
+    "title": "서촌 골목 아트 워크",
+    "description": "서촌 갤러리와 공예 공방을 돌며 전시를 함께 감상합니다.",
+    "date": "토요일 14:00",
     "leaderId": "leader_09",
-    "leaderName": "서울모임장10",
+    "leaderName": "현지",
     "tags": [
-      "문화",
-      "뮤지컬",
-      "공연"
+      "미술",
+      "투어",
+      "산책"
     ],
     "members": [
       "leader_09"
     ],
-    "latitude": 37.599509,
-    "longitude": 126.86156,
-    "createdAt": 1717254000000
+    "latitude": 37.5815,
+    "longitude": 126.9723,
+    "createdAt": 1717967600000
   },
   {
     "id": "seed-10",
-    "title": "서울 러닝 크루 11",
-    "description": "서울 곳곳에서 함께 러닝 활동을 즐겨요. 새로운 친구들과 러닝하며 친목을 다져봐요.",
-    "date": "매주 토요일 8시",
+    "title": "북촌 한옥 스케치",
+    "description": "북촌 골목을 함께 걸으며 펜 드로잉으로 풍경을 담아요.",
+    "date": "일요일 09:30",
     "leaderId": "leader_10",
-    "leaderName": "서울모임장11",
+    "leaderName": "혜림",
     "tags": [
-      "운동",
-      "러닝",
-      "건강"
+      "드로잉",
+      "여행",
+      "문화"
     ],
     "members": [
       "leader_10"
     ],
-    "latitude": 37.598931,
-    "longitude": 127.027553,
-    "createdAt": 1717250400000
+    "latitude": 37.5824,
+    "longitude": 126.9833,
+    "createdAt": 1717964000000
   },
   {
     "id": "seed-11",
-    "title": "서울 등산 크루 12",
-    "description": "서울 곳곳에서 함께 등산 활동을 즐겨요. 새로운 친구들과 등산하며 친목을 다져봐요.",
-    "date": "매주 토요일 9시",
+    "title": "광화문 점심 글쓰기",
+    "description": "점심 시간을 활용해 500자 내외의 글을 쓰고 피드백합니다.",
+    "date": "목요일 12:15",
     "leaderId": "leader_11",
-    "leaderName": "서울모임장12",
+    "leaderName": "도윤",
     "tags": [
-      "운동",
-      "등산",
-      "자연"
+      "글쓰기",
+      "점심",
+      "셀프성장"
     ],
     "members": [
       "leader_11"
     ],
-    "latitude": 37.52444,
-    "longitude": 126.897315,
-    "createdAt": 1717246800000
+    "latitude": 37.5713,
+    "longitude": 126.9768,
+    "createdAt": 1717960400000
   },
   {
     "id": "seed-12",
-    "title": "서울 카페 크루 13",
-    "description": "서울 곳곳에서 함께 카페 활동을 즐겨요. 새로운 친구들과 카페하며 친목을 다져봐요.",
-    "date": "매주 토요일 10시",
+    "title": "여의도 석양 사진회",
+    "description": "퇴근 후 여의도 한강에서 해질녘 풍경을 촬영하고 현장에서 리뷰합니다.",
+    "date": "화요일 18:30",
     "leaderId": "leader_12",
-    "leaderName": "서울모임장13",
+    "leaderName": "은정",
     "tags": [
-      "카페",
-      "수다",
+      "사진",
+      "야경",
       "친목"
     ],
     "members": [
       "leader_12"
     ],
-    "latitude": 37.623154,
-    "longitude": 126.940783,
-    "createdAt": 1717243200000
+    "latitude": 37.525,
+    "longitude": 126.9189,
+    "createdAt": 1717956800000
   },
   {
     "id": "seed-13",
-    "title": "서울 스터디 크루 14",
-    "description": "서울 곳곳에서 함께 스터디 활동을 즐겨요. 새로운 친구들과 스터디하며 친목을 다져봐요.",
-    "date": "매주 토요일 11시",
+    "title": "당산 실험 요리 클럽",
+    "description": "새로운 레시피를 테스트하고 경험을 나누는 쿠킹 모임.",
+    "date": "토요일 16:00",
     "leaderId": "leader_13",
-    "leaderName": "서울모임장14",
+    "leaderName": "해솔",
     "tags": [
-      "스터디",
-      "자기계발",
-      "공부"
+      "요리",
+      "실험",
+      "홈파티"
     ],
     "members": [
       "leader_13"
     ],
-    "latitude": 37.484839,
-    "longitude": 126.883212,
-    "createdAt": 1717239600000
+    "latitude": 37.5342,
+    "longitude": 126.9028,
+    "createdAt": 1717953200000
   },
   {
     "id": "seed-14",
-    "title": "서울 맛집 크루 15",
-    "description": "서울 곳곳에서 함께 맛집 활동을 즐겨요. 새로운 친구들과 맛집하며 친목을 다져봐요.",
-    "date": "매주 토요일 12시",
+    "title": "건대입구 보드게임 살롱",
+    "description": "테마별 보드게임을 골라 집중 플레이하고 전략을 공유합니다.",
+    "date": "금요일 19:30",
     "leaderId": "leader_14",
-    "leaderName": "서울모임장15",
+    "leaderName": "민주",
     "tags": [
-      "맛집",
-      "미식",
+      "보드게임",
+      "전략",
       "친목"
     ],
     "members": [
       "leader_14"
     ],
-    "latitude": 37.605599,
-    "longitude": 127.004894,
-    "createdAt": 1717236000000
+    "latitude": 37.5405,
+    "longitude": 127.0695,
+    "createdAt": 1717949600000
   },
   {
     "id": "seed-15",
-    "title": "서울 사진 크루 16",
-    "description": "서울 곳곳에서 함께 사진 활동을 즐겨요. 새로운 친구들과 사진하며 친목을 다져봐요.",
-    "date": "매주 토요일 13시",
+    "title": "왕십리 크래프트 비어 투어",
+    "description": "소규모 브루어리를 방문하고 시그니처 맥주를 시음합니다.",
+    "date": "토요일 19:00",
     "leaderId": "leader_15",
-    "leaderName": "서울모임장16",
+    "leaderName": "명진",
     "tags": [
-      "사진",
-      "취미",
-      "전시"
+      "맥주",
+      "투어",
+      "라이프스타일"
     ],
     "members": [
       "leader_15"
     ],
-    "latitude": 37.599141,
-    "longitude": 127.035136,
-    "createdAt": 1717232400000
+    "latitude": 37.5614,
+    "longitude": 127.0386,
+    "createdAt": 1717946000000
   },
   {
     "id": "seed-16",
-    "title": "서울 요가 크루 17",
-    "description": "서울 곳곳에서 함께 요가 활동을 즐겨요. 새로운 친구들과 요가하며 친목을 다져봐요.",
-    "date": "매주 토요일 14시",
+    "title": "노량진 새벽 수영단",
+    "description": "새벽 6시 실내수영장에서 함께 자유수영하고 아침을 시작해요.",
+    "date": "평일 06:00",
     "leaderId": "leader_16",
-    "leaderName": "서울모임장17",
+    "leaderName": "윤하",
     "tags": [
       "운동",
-      "요가",
-      "힐링"
+      "수영",
+      "새벽"
     ],
     "members": [
       "leader_16"
     ],
-    "latitude": 37.555796,
-    "longitude": 127.093548,
-    "createdAt": 1717228800000
+    "latitude": 37.5136,
+    "longitude": 126.9424,
+    "createdAt": 1717942400000
   },
   {
     "id": "seed-17",
-    "title": "서울 보드게임 크루 18",
-    "description": "서울 곳곳에서 함께 보드게임 활동을 즐겨요. 새로운 친구들과 보드게임하며 친목을 다져봐요.",
-    "date": "매주 토요일 15시",
+    "title": "사당 주말 베이킹",
+    "description": "기본 제빵부터 시즌 디저트까지 함께 실습하는 베이킹 스터디.",
+    "date": "일요일 15:00",
     "leaderId": "leader_17",
-    "leaderName": "서울모임장18",
+    "leaderName": "가희",
     "tags": [
-      "보드게임",
+      "베이킹",
       "취미",
-      "친목"
+      "홈카페"
     ],
     "members": [
       "leader_17"
     ],
-    "latitude": 37.530566,
-    "longitude": 126.99249,
-    "createdAt": 1717225200000
+    "latitude": 37.4785,
+    "longitude": 126.981,
+    "createdAt": 1717938800000
   },
   {
     "id": "seed-18",
-    "title": "서울 플로깅 크루 19",
-    "description": "서울 곳곳에서 함께 플로깅 활동을 즐겨요. 새로운 친구들과 플로깅하며 친목을 다져봐요.",
-    "date": "매주 토요일 16시",
+    "title": "합정 독서+산책 클럽",
+    "description": "한 달 한 권 책을 읽고 합정동 골목 산책과 함께 이야기 나눠요.",
+    "date": "토요일 11:00",
     "leaderId": "leader_18",
-    "leaderName": "서울모임장19",
+    "leaderName": "태현",
     "tags": [
-      "환경",
-      "운동",
-      "걷기"
+      "독서",
+      "산책",
+      "대화"
     ],
     "members": [
       "leader_18"
     ],
-    "latitude": 37.602705,
-    "longitude": 127.008445,
-    "createdAt": 1717221600000
+    "latitude": 37.5493,
+    "longitude": 126.9137,
+    "createdAt": 1717935200000
   },
   {
     "id": "seed-19",
-    "title": "서울 뮤지컬 크루 20",
-    "description": "서울 곳곳에서 함께 뮤지컬 활동을 즐겨요. 새로운 친구들과 뮤지컬하며 친목을 다져봐요.",
-    "date": "매주 토요일 17시",
+    "title": "상수 비건 레시피 나눔",
+    "description": "비건 식당을 방문하거나 레시피를 함께 연구해 공유합니다.",
+    "date": "수요일 19:30",
     "leaderId": "leader_19",
-    "leaderName": "서울모임장20",
+    "leaderName": "수빈",
     "tags": [
-      "문화",
-      "뮤지컬",
-      "공연"
+      "비건",
+      "요리",
+      "지속가능"
     ],
     "members": [
       "leader_19"
     ],
-    "latitude": 37.607873,
-    "longitude": 126.998565,
-    "createdAt": 1717218000000
+    "latitude": 37.5475,
+    "longitude": 126.9238,
+    "createdAt": 1717931600000
   },
   {
     "id": "seed-20",
-    "title": "서울 러닝 크루 21",
-    "description": "서울 곳곳에서 함께 러닝 활동을 즐겨요. 새로운 친구들과 러닝하며 친목을 다져봐요.",
-    "date": "매주 토요일 8시",
+    "title": "서교동 아날로그 게임 나잇",
+    "description": "콘솔 대신 카드, 보드, 추리게임으로 밤새 놀아요.",
+    "date": "토요일 20:30",
     "leaderId": "leader_20",
-    "leaderName": "서울모임장21",
+    "leaderName": "서준",
     "tags": [
-      "운동",
-      "러닝",
-      "건강"
+      "게임",
+      "친목",
+      "아날로그"
     ],
     "members": [
       "leader_20"
     ],
-    "latitude": 37.582731,
-    "longitude": 126.870998,
-    "createdAt": 1717214400000
+    "latitude": 37.5568,
+    "longitude": 126.923,
+    "createdAt": 1717928000000
   },
   {
     "id": "seed-21",
-    "title": "서울 등산 크루 22",
-    "description": "서울 곳곳에서 함께 등산 활동을 즐겨요. 새로운 친구들과 등산하며 친목을 다져봐요.",
-    "date": "매주 토요일 9시",
+    "title": "한강진 와인 & 토크",
+    "description": "작은 와인바에서 서로 좋아하는 와인을 소개하고 이야기를 나누는 모임.",
+    "date": "금요일 21:00",
     "leaderId": "leader_21",
-    "leaderName": "서울모임장22",
+    "leaderName": "소혜",
     "tags": [
-      "운동",
-      "등산",
-      "자연"
+      "와인",
+      "야간",
+      "네트워킹"
     ],
     "members": [
       "leader_21"
     ],
-    "latitude": 37.506464,
-    "longitude": 126.929453,
-    "createdAt": 1717210800000
+    "latitude": 37.5391,
+    "longitude": 127.0025,
+    "createdAt": 1717924400000
   },
   {
     "id": "seed-22",
-    "title": "서울 카페 크루 23",
-    "description": "서울 곳곳에서 함께 카페 활동을 즐겨요. 새로운 친구들과 카페하며 친목을 다져봐요.",
-    "date": "매주 토요일 10시",
+    "title": "압구정 리셋 필라테스",
+    "description": "금요일 아침 매트 필라테스로 몸을 깨우고 주간 피로를 풀어요.",
+    "date": "금요일 07:30",
     "leaderId": "leader_22",
-    "leaderName": "서울모임장23",
+    "leaderName": "리아",
     "tags": [
-      "카페",
-      "수다",
-      "친목"
+      "운동",
+      "필라테스",
+      "건강"
     ],
     "members": [
       "leader_22"
     ],
-    "latitude": 37.482767,
-    "longitude": 126.91587,
-    "createdAt": 1717207200000
+    "latitude": 37.5265,
+    "longitude": 127.0289,
+    "createdAt": 1717920800000
   },
   {
     "id": "seed-23",
-    "title": "서울 스터디 크루 24",
-    "description": "서울 곳곳에서 함께 스터디 활동을 즐겨요. 새로운 친구들과 스터디하며 친목을 다져봐요.",
-    "date": "매주 토요일 11시",
+    "title": "청담 브런치 살롱",
+    "description": "격주 토요일 트렌디한 카페에서 브런치와 취향을 나눠요.",
+    "date": "격주 토요일 11:00",
     "leaderId": "leader_23",
-    "leaderName": "서울모임장24",
+    "leaderName": "나래",
     "tags": [
-      "스터디",
-      "자기계발",
-      "공부"
+      "브런치",
+      "라이프스타일",
+      "대화"
     ],
     "members": [
       "leader_23"
     ],
-    "latitude": 37.48616,
-    "longitude": 126.926714,
-    "createdAt": 1717203600000
+    "latitude": 37.5244,
+    "longitude": 127.0516,
+    "createdAt": 1717917200000
   },
   {
     "id": "seed-24",
-    "title": "서울 맛집 크루 25",
-    "description": "서울 곳곳에서 함께 맛집 활동을 즐겨요. 새로운 친구들과 맛집하며 친목을 다져봐요.",
-    "date": "매주 토요일 12시",
+    "title": "방배 클래식 감상회",
+    "description": "아날로그 오디오로 클래식을 듣고 곡 해설과 감상을 공유합니다.",
+    "date": "일요일 17:00",
     "leaderId": "leader_24",
-    "leaderName": "서울모임장25",
+    "leaderName": "수경",
     "tags": [
-      "맛집",
-      "미식",
-      "친목"
+      "음악",
+      "클래식",
+      "감상"
     ],
     "members": [
       "leader_24"
     ],
-    "latitude": 37.57171,
-    "longitude": 126.94756,
-    "createdAt": 1717200000000
+    "latitude": 37.4946,
+    "longitude": 126.9873,
+    "createdAt": 1717913600000
   },
   {
     "id": "seed-25",
-    "title": "서울 사진 크루 26",
-    "description": "서울 곳곳에서 함께 사진 활동을 즐겨요. 새로운 친구들과 사진하며 친목을 다져봐요.",
-    "date": "매주 토요일 13시",
+    "title": "역삼 애자일 스터디",
+    "description": "IT 종사자들이 애자일 사례를 나누고 미니 워크숍을 진행합니다.",
+    "date": "화요일 19:30",
     "leaderId": "leader_25",
-    "leaderName": "서울모임장26",
+    "leaderName": "재훈",
     "tags": [
-      "사진",
-      "취미",
-      "전시"
+      "IT",
+      "스터디",
+      "워크숍"
     ],
     "members": [
       "leader_25"
     ],
-    "latitude": 37.529229,
-    "longitude": 126.910282,
-    "createdAt": 1717196400000
+    "latitude": 37.5004,
+    "longitude": 127.0364,
+    "createdAt": 1717910000000
   },
   {
     "id": "seed-26",
-    "title": "서울 요가 크루 27",
-    "description": "서울 곳곳에서 함께 요가 활동을 즐겨요. 새로운 친구들과 요가하며 친목을 다져봐요.",
-    "date": "매주 토요일 14시",
+    "title": "선릉 스타트업 런치",
+    "description": "선릉 직장인들이 모여 점심시간에 스타트업 트렌드를 이야기해요.",
+    "date": "수요일 12:00",
     "leaderId": "leader_26",
-    "leaderName": "서울모임장27",
+    "leaderName": "혜승",
     "tags": [
-      "운동",
-      "요가",
-      "힐링"
+      "비즈니스",
+      "점심",
+      "네트워킹"
     ],
     "members": [
       "leader_26"
     ],
-    "latitude": 37.512716,
-    "longitude": 127.084797,
-    "createdAt": 1717192800000
+    "latitude": 37.504,
+    "longitude": 127.0487,
+    "createdAt": 1717906400000
   },
   {
     "id": "seed-27",
-    "title": "서울 보드게임 크루 28",
-    "description": "서울 곳곳에서 함께 보드게임 활동을 즐겨요. 새로운 친구들과 보드게임하며 친목을 다져봐요.",
-    "date": "매주 토요일 15시",
+    "title": "신사 가드닝 클래스",
+    "description": "옥상 텃밭에서 허브와 식용꽃을 함께 키워봅니다.",
+    "date": "토요일 10:00",
     "leaderId": "leader_27",
-    "leaderName": "서울모임장28",
+    "leaderName": "윤지",
     "tags": [
-      "보드게임",
-      "취미",
-      "친목"
+      "가드닝",
+      "지속가능",
+      "라이프스타일"
     ],
     "members": [
       "leader_27"
     ],
-    "latitude": 37.573686,
-    "longitude": 127.006191,
-    "createdAt": 1717189200000
+    "latitude": 37.5202,
+    "longitude": 127.0207,
+    "createdAt": 1717902800000
   },
   {
     "id": "seed-28",
-    "title": "서울 플로깅 크루 29",
-    "description": "서울 곳곳에서 함께 플로깅 활동을 즐겨요. 새로운 친구들과 플로깅하며 친목을 다져봐요.",
-    "date": "매주 토요일 16시",
+    "title": "가로수길 필름토크",
+    "description": "감명 깊었던 영화를 보고 서로의 감상을 나누는 시네마 살롱.",
+    "date": "목요일 19:30",
     "leaderId": "leader_28",
-    "leaderName": "서울모임장29",
+    "leaderName": "채우",
     "tags": [
-      "환경",
-      "운동",
-      "걷기"
+      "영화",
+      "토론",
+      "문화"
     ],
     "members": [
       "leader_28"
     ],
-    "latitude": 37.497382,
-    "longitude": 127.03499,
-    "createdAt": 1717185600000
+    "latitude": 37.5208,
+    "longitude": 127.0234,
+    "createdAt": 1717899200000
   },
   {
     "id": "seed-29",
-    "title": "서울 뮤지컬 크루 30",
-    "description": "서울 곳곳에서 함께 뮤지컬 활동을 즐겨요. 새로운 친구들과 뮤지컬하며 친목을 다져봐요.",
-    "date": "매주 토요일 17시",
+    "title": "신촌 어반 스케치",
+    "description": "신촌 골목과 캠퍼스 풍경을 수채화로 그리는 모임입니다.",
+    "date": "토요일 13:30",
     "leaderId": "leader_29",
-    "leaderName": "서울모임장30",
+    "leaderName": "하린",
     "tags": [
-      "문화",
-      "뮤지컬",
-      "공연"
+      "드로잉",
+      "수채화",
+      "도시"
     ],
     "members": [
       "leader_29"
     ],
-    "latitude": 37.496144,
-    "longitude": 126.951069,
-    "createdAt": 1717182000000
+    "latitude": 37.556,
+    "longitude": 126.9369,
+    "createdAt": 1717895600000
   },
   {
     "id": "seed-30",
-    "title": "서울 러닝 크루 31",
-    "description": "서울 곳곳에서 함께 러닝 활동을 즐겨요. 새로운 친구들과 러닝하며 친목을 다져봐요.",
-    "date": "매주 토요일 8시",
+    "title": "이화 벼룩시장 셀러",
+    "description": "이화여대 인근 플리마켓에 함께 참가해 셀링 노하우를 공유해요.",
+    "date": "토요일 11:00",
     "leaderId": "leader_30",
-    "leaderName": "서울모임장31",
+    "leaderName": "지수",
     "tags": [
-      "운동",
-      "러닝",
-      "건강"
+      "플리마켓",
+      "셀프브랜딩",
+      "네트워킹"
     ],
     "members": [
       "leader_30"
     ],
-    "latitude": 37.628324,
-    "longitude": 127.0136,
-    "createdAt": 1717178400000
+    "latitude": 37.5599,
+    "longitude": 126.9445,
+    "createdAt": 1717892000000
   },
   {
     "id": "seed-31",
-    "title": "서울 등산 크루 32",
-    "description": "서울 곳곳에서 함께 등산 활동을 즐겨요. 새로운 친구들과 등산하며 친목을 다져봐요.",
-    "date": "매주 토요일 9시",
+    "title": "대학로 즉흥 연기연습",
+    "description": "즉흥 연기 게임과 장면 만들기로 자신감을 키워봐요.",
+    "date": "수요일 20:00",
     "leaderId": "leader_31",
-    "leaderName": "서울모임장32",
+    "leaderName": "정후",
     "tags": [
-      "운동",
-      "등산",
-      "자연"
+      "연기",
+      "공연",
+      "자기계발"
     ],
     "members": [
       "leader_31"
     ],
-    "latitude": 37.559112,
-    "longitude": 127.024307,
-    "createdAt": 1717174800000
+    "latitude": 37.5819,
+    "longitude": 127.0021,
+    "createdAt": 1717888400000
   },
   {
     "id": "seed-32",
-    "title": "서울 카페 크루 33",
-    "description": "서울 곳곳에서 함께 카페 활동을 즐겨요. 새로운 친구들과 카페하며 친목을 다져봐요.",
-    "date": "매주 토요일 10시",
+    "title": "혜화 독립서점 라운드",
+    "description": "혜화 근처 독립서점을 탐방하고 좋은 책을 추천합니다.",
+    "date": "일요일 14:00",
     "leaderId": "leader_32",
-    "leaderName": "서울모임장33",
+    "leaderName": "문수",
     "tags": [
-      "카페",
-      "수다",
-      "친목"
+      "책",
+      "투어",
+      "문화"
     ],
     "members": [
       "leader_32"
     ],
-    "latitude": 37.604856,
-    "longitude": 127.04624,
-    "createdAt": 1717171200000
+    "latitude": 37.5825,
+    "longitude": 127.0028,
+    "createdAt": 1717884800000
   },
   {
     "id": "seed-33",
-    "title": "서울 스터디 크루 34",
-    "description": "서울 곳곳에서 함께 스터디 활동을 즐겨요. 새로운 친구들과 스터디하며 친목을 다져봐요.",
-    "date": "매주 토요일 11시",
+    "title": "송파 반려견 산책 러닝",
+    "description": "잠실-송파 일대 반려견과 함께하는 가벼운 조깅 모임.",
+    "date": "토요일 08:30",
     "leaderId": "leader_33",
-    "leaderName": "서울모임장34",
+    "leaderName": "채운",
     "tags": [
-      "스터디",
-      "자기계발",
-      "공부"
+      "반려견",
+      "러닝",
+      "힐링"
     ],
     "members": [
       "leader_33"
     ],
-    "latitude": 37.506648,
-    "longitude": 126.867704,
-    "createdAt": 1717167600000
+    "latitude": 37.5008,
+    "longitude": 127.1112,
+    "createdAt": 1717881200000
   },
   {
     "id": "seed-34",
-    "title": "서울 맛집 크루 35",
-    "description": "서울 곳곳에서 함께 맛집 활동을 즐겨요. 새로운 친구들과 맛집하며 친목을 다져봐요.",
-    "date": "매주 토요일 12시",
+    "title": "문정 주말 스튜디오 촬영",
+    "description": "문정동 소형 스튜디오에서 포트레이트 촬영 실습을 진행합니다.",
+    "date": "일요일 16:00",
     "leaderId": "leader_34",
-    "leaderName": "서울모임장35",
+    "leaderName": "유라",
     "tags": [
-      "맛집",
-      "미식",
-      "친목"
+      "사진",
+      "포트레이트",
+      "취미"
     ],
     "members": [
       "leader_34"
     ],
-    "latitude": 37.520472,
-    "longitude": 126.924258,
-    "createdAt": 1717164000000
+    "latitude": 37.4846,
+    "longitude": 127.1247,
+    "createdAt": 1717877600000
   },
   {
     "id": "seed-35",
-    "title": "서울 사진 크루 36",
-    "description": "서울 곳곳에서 함께 사진 활동을 즐겨요. 새로운 친구들과 사진하며 친목을 다져봐요.",
-    "date": "매주 토요일 13시",
+    "title": "수서 해질녘 자전거",
+    "description": "수서역에서 출발해 탄천을 따라 해질녘까지 라이딩합니다.",
+    "date": "금요일 18:30",
     "leaderId": "leader_35",
-    "leaderName": "서울모임장36",
+    "leaderName": "성아",
     "tags": [
-      "사진",
-      "취미",
-      "전시"
+      "자전거",
+      "야외",
+      "운동"
     ],
     "members": [
       "leader_35"
     ],
-    "latitude": 37.503757,
-    "longitude": 127.086298,
-    "createdAt": 1717160400000
+    "latitude": 37.4877,
+    "longitude": 127.1039,
+    "createdAt": 1717874000000
   },
   {
     "id": "seed-36",
-    "title": "서울 요가 크루 37",
-    "description": "서울 곳곳에서 함께 요가 활동을 즐겨요. 새로운 친구들과 요가하며 친목을 다져봐요.",
-    "date": "매주 토요일 14시",
+    "title": "광장동 강변 피크닉",
+    "description": "강변역 근처 잔디밭에서 돗자리 피크닉과 간단한 게임을 즐겨요.",
+    "date": "일요일 15:00",
     "leaderId": "leader_36",
-    "leaderName": "서울모임장37",
+    "leaderName": "현석",
     "tags": [
-      "운동",
-      "요가",
-      "힐링"
+      "피크닉",
+      "친목",
+      "야외"
     ],
     "members": [
       "leader_36"
     ],
-    "latitude": 37.610219,
-    "longitude": 126.935523,
-    "createdAt": 1717156800000
+    "latitude": 37.5468,
+    "longitude": 127.1036,
+    "createdAt": 1717870400000
   },
   {
     "id": "seed-37",
-    "title": "서울 보드게임 크루 38",
-    "description": "서울 곳곳에서 함께 보드게임 활동을 즐겨요. 새로운 친구들과 보드게임하며 친목을 다져봐요.",
-    "date": "매주 토요일 15시",
+    "title": "잠실새내 드립커피 랩",
+    "description": "핸드드립 추출법을 비교해보고 향미 노트를 기록합니다.",
+    "date": "수요일 19:00",
     "leaderId": "leader_37",
-    "leaderName": "서울모임장38",
+    "leaderName": "보라",
     "tags": [
-      "보드게임",
+      "커피",
       "취미",
-      "친목"
+      "테이스팅"
     ],
     "members": [
       "leader_37"
     ],
-    "latitude": 37.57487,
-    "longitude": 126.954952,
-    "createdAt": 1717153200000
+    "latitude": 37.5116,
+    "longitude": 127.0963,
+    "createdAt": 1717866800000
   },
   {
     "id": "seed-38",
-    "title": "서울 플로깅 크루 39",
-    "description": "서울 곳곳에서 함께 플로깅 활동을 즐겨요. 새로운 친구들과 플로깅하며 친목을 다져봐요.",
-    "date": "매주 토요일 16시",
+    "title": "목동 부모 토요 모임",
+    "description": "초등 자녀를 둔 부모들이 교육 고민을 나누는 주말 라운드테이블.",
+    "date": "토요일 10:30",
     "leaderId": "leader_38",
-    "leaderName": "서울모임장39",
+    "leaderName": "선미",
     "tags": [
-      "환경",
-      "운동",
-      "걷기"
+      "육아",
+      "교육",
+      "친목"
     ],
     "members": [
       "leader_38"
     ],
-    "latitude": 37.616328,
-    "longitude": 126.970124,
-    "createdAt": 1717149600000
+    "latitude": 37.5294,
+    "longitude": 126.8735,
+    "createdAt": 1717863200000
   },
   {
     "id": "seed-39",
-    "title": "서울 뮤지컬 크루 40",
-    "description": "서울 곳곳에서 함께 뮤지컬 활동을 즐겨요. 새로운 친구들과 뮤지컬하며 친목을 다져봐요.",
-    "date": "매주 토요일 17시",
+    "title": "상암 미디어 스터디",
+    "description": "미디어 업계 종사자들이 최신 트렌드를 공유하는 세미나.",
+    "date": "목요일 19:30",
     "leaderId": "leader_39",
-    "leaderName": "서울모임장40",
+    "leaderName": "기범",
     "tags": [
-      "문화",
-      "뮤지컬",
-      "공연"
+      "미디어",
+      "스터디",
+      "세미나"
     ],
     "members": [
       "leader_39"
     ],
-    "latitude": 37.512381,
-    "longitude": 126.919191,
-    "createdAt": 1717146000000
+    "latitude": 37.5818,
+    "longitude": 126.888,
+    "createdAt": 1717859600000
+  },
+  {
+    "id": "seed-40",
+    "title": "은평 힐링 트레킹",
+    "description": "불광천과 북한산 자락을 가볍게 걸으며 계절 변화를 느낍니다.",
+    "date": "일요일 08:30",
+    "leaderId": "leader_40",
+    "leaderName": "나연",
+    "tags": [
+      "트레킹",
+      "자연",
+      "힐링"
+    ],
+    "members": [
+      "leader_40"
+    ],
+    "latitude": 37.6028,
+    "longitude": 126.9294,
+    "createdAt": 1717856000000
+  },
+  {
+    "id": "seed-41",
+    "title": "불광 별밤 천체 관측",
+    "description": "소형 망원경을 들고 별자리를 관측하며 밤하늘을 기록합니다.",
+    "date": "토요일 21:30",
+    "leaderId": "leader_41",
+    "leaderName": "태양",
+    "tags": [
+      "천체",
+      "과학",
+      "야간"
+    ],
+    "members": [
+      "leader_41"
+    ],
+    "latitude": 37.6102,
+    "longitude": 126.9287,
+    "createdAt": 1717852400000
+  },
+  {
+    "id": "seed-42",
+    "title": "수유 전통시장 탐험",
+    "description": "수유시장 먹거리와 숨은 가게를 탐방하는 로컬 투어.",
+    "date": "토요일 12:00",
+    "leaderId": "leader_42",
+    "leaderName": "미정",
+    "tags": [
+      "시장",
+      "투어",
+      "로컬"
+    ],
+    "members": [
+      "leader_42"
+    ],
+    "latitude": 37.6381,
+    "longitude": 127.0259,
+    "createdAt": 1717848800000
+  },
+  {
+    "id": "seed-43",
+    "title": "도곡 브라운백 개발 스터디",
+    "description": "점심시간 45분 동안 개발 지식을 공유하는 번개 세션.",
+    "date": "화요일 12:15",
+    "leaderId": "leader_43",
+    "leaderName": "한얼",
+    "tags": [
+      "개발",
+      "점심",
+      "스터디"
+    ],
+    "members": [
+      "leader_43"
+    ],
+    "latitude": 37.4918,
+    "longitude": 127.0418,
+    "createdAt": 1717845200000
+  },
+  {
+    "id": "seed-44",
+    "title": "개포 캘리그래피 살롱",
+    "description": "주 1회 모여 다양한 붓펜으로 캘리그래피를 연습해요.",
+    "date": "금요일 19:00",
+    "leaderId": "leader_44",
+    "leaderName": "채린",
+    "tags": [
+      "캘리그래피",
+      "취미",
+      "공방"
+    ],
+    "members": [
+      "leader_44"
+    ],
+    "latitude": 37.4849,
+    "longitude": 127.0476,
+    "createdAt": 1717841600000
+  },
+  {
+    "id": "seed-45",
+    "title": "양재 플로깅 어택",
+    "description": "양재천을 달리며 쓰레기를 줍는 친환경 러닝 모임.",
+    "date": "토요일 09:00",
+    "leaderId": "leader_45",
+    "leaderName": "수호",
+    "tags": [
+      "플로깅",
+      "환경",
+      "운동"
+    ],
+    "members": [
+      "leader_45"
+    ],
+    "latitude": 37.484,
+    "longitude": 127.0344,
+    "createdAt": 1717838000000
+  },
+  {
+    "id": "seed-46",
+    "title": "일원 비건 런치 박스",
+    "description": "점심시간에 비건 도시락을 나누고 레시피를 공유해요.",
+    "date": "수요일 12:30",
+    "leaderId": "leader_46",
+    "leaderName": "은서",
+    "tags": [
+      "비건",
+      "점심",
+      "레시피"
+    ],
+    "members": [
+      "leader_46"
+    ],
+    "latitude": 37.4835,
+    "longitude": 127.0867,
+    "createdAt": 1717834400000
+  },
+  {
+    "id": "seed-47",
+    "title": "동대문 새벽 패션 헌터",
+    "description": "새벽 도매시장에서 트렌드를 체크하고 구매 팁을 나눕니다.",
+    "date": "토요일 04:30",
+    "leaderId": "leader_47",
+    "leaderName": "라온",
+    "tags": [
+      "패션",
+      "도매",
+      "새벽"
+    ],
+    "members": [
+      "leader_47"
+    ],
+    "latitude": 37.5719,
+    "longitude": 127.0092,
+    "createdAt": 1717830800000
+  },
+  {
+    "id": "seed-48",
+    "title": "청량리 철도 기록회",
+    "description": "철도 팬들이 모여 사진과 기록을 공유하는 세션.",
+    "date": "일요일 11:00",
+    "leaderId": "leader_48",
+    "leaderName": "준호",
+    "tags": [
+      "철도",
+      "기록",
+      "취미"
+    ],
+    "members": [
+      "leader_48"
+    ],
+    "latitude": 37.5807,
+    "longitude": 127.0486,
+    "createdAt": 1717827200000
+  },
+  {
+    "id": "seed-49",
+    "title": "중랑 플라워 클래스",
+    "description": "중랑천 근처 스튜디오에서 시즌 꽃으로 미니 부케를 만듭니다.",
+    "date": "토요일 15:30",
+    "leaderId": "leader_49",
+    "leaderName": "세라",
+    "tags": [
+      "플라워",
+      "공예",
+      "라이프스타일"
+    ],
+    "members": [
+      "leader_49"
+    ],
+    "latitude": 37.5984,
+    "longitude": 127.0937,
+    "createdAt": 1717823600000
   }
 ]

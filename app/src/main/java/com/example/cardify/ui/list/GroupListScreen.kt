@@ -32,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -74,6 +75,8 @@ fun GroupListScreen(
         }.sortedWith(compareByDescending<Pair<Group, Float>> { it.second }.thenByDescending { it.first.createdAt })
     }
 
+    val groupsById = remember(groups) { groups.associateBy { it.id } }
+
     val highlightedGroups = remember(groups, normalizedUserTag) {
         if (normalizedUserTag.isEmpty()) {
             emptyList()
@@ -90,44 +93,51 @@ fun GroupListScreen(
                 }
                 if (score > 0f) group to score else null
             }
-                .sortedByDescending { it.second }
-                .map { it.first }
-                .distinct()
+                .sortedWith(compareByDescending<Pair<Group, Float>> { it.second }.thenByDescending { it.first.createdAt })
         }
     }
 
-    val highlightedLimited = remember(highlightedGroups) { highlightedGroups.take(5) }
+    val highlightedLimited = remember(highlightedGroups) { highlightedGroups.take(MAX_SIMILAR_RESULTS) }
 
-    val nearbyGroups = remember(groups, userLocation) {
+    val distanceByGroup = remember(groups, userLocation) {
         if (userLocation == null) {
-            emptyList()
+            emptyMap()
         } else {
-            groups.mapNotNull { group ->
-                if (group.latitude == 0.0 && group.longitude == 0.0) {
-                    null
-                } else {
-                    val results = FloatArray(1)
-                    Location.distanceBetween(
-                        userLocation.latitude,
-                        userLocation.longitude,
-                        group.latitude,
-                        group.longitude,
-                        results
-                    )
-                    val distanceMeters = results.firstOrNull() ?: Float.NaN
-                    if (distanceMeters.isNaN() || distanceMeters > FIVE_KM_METERS) {
-                        null
-                    } else {
-                        group to distanceMeters
+            buildMap {
+                groups.forEach { group ->
+                    if ((group.latitude != 0.0 || group.longitude != 0.0) &&
+                        group.latitude in -90.0..90.0 &&
+                        group.longitude in -180.0..180.0
+                    ) {
+                        val results = FloatArray(1)
+                        val meters = runCatching {
+                            Location.distanceBetween(
+                                userLocation.latitude,
+                                userLocation.longitude,
+                                group.latitude,
+                                group.longitude,
+                                results
+                            )
+                            results.firstOrNull()?.toDouble()
+                        }.getOrNull()
+                        if (meters != null && !meters.isNaN()) {
+                            put(group.id, meters / 1000.0)
+                        }
                     }
                 }
             }
-                .sortedBy { it.second }
-                .map { it.first }
         }
     }
 
-    val nearbyLimited = remember(nearbyGroups) { nearbyGroups.take(5) }
+    val nearbyLimited = remember(distanceByGroup, groupsById) {
+        distanceByGroup.entries
+            .filter { it.value <= FIVE_KM_THRESHOLD_KM }
+            .sortedBy { it.value }
+            .take(MAX_NEARBY_RESULTS)
+            .mapNotNull { (groupId, distanceKm) ->
+                groupsById[groupId]?.let { it to distanceKm }
+            }
+    }
 
     val listState = rememberLazyListState()
     var searchQuery by rememberSaveable { mutableStateOf("") }
@@ -217,9 +227,19 @@ fun GroupListScreen(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 } else {
-                    highlightedLimited.forEach { group ->
+                    highlightedLimited.forEach { (group, _) ->
+                        val tagsLabel = if (group.tags.isEmpty()) {
+                            stringResource(id = R.string.group_tags_empty_inline)
+                        } else {
+                            group.tags.joinToString(separator = " ") { "#$it" }
+                        }
+                        val displayText = stringResource(
+                            id = R.string.group_list_similar_entry,
+                            group.title,
+                            tagsLabel
+                        )
                         Text(
-                            text = group.title,
+                            text = displayText,
                             color = MaterialTheme.colorScheme.primary,
                             textDecoration = TextDecoration.Underline,
                             style = MaterialTheme.typography.bodyMedium,
@@ -257,9 +277,18 @@ fun GroupListScreen(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 } else {
-                    nearbyLimited.forEach { group ->
+                    nearbyLimited.forEach { (group, distanceKm) ->
+                        val distanceLabel = stringResource(
+                            id = R.string.group_distance_short_format,
+                            distanceKm
+                        )
+                        val displayText = stringResource(
+                            id = R.string.group_list_radius_entry,
+                            group.title,
+                            distanceLabel
+                        )
                         Text(
-                            text = group.title,
+                            text = displayText,
                             color = MaterialTheme.colorScheme.primary,
                             textDecoration = TextDecoration.Underline,
                             style = MaterialTheme.typography.bodyMedium,
@@ -321,6 +350,7 @@ fun GroupListScreen(
                     isMember = group.members.contains(userId),
                     isJoining = joiningGroups.contains(group.id),
                     isLeader = group.leaderId == userId,
+                    distanceKm = distanceByGroup[group.id],
                     onJoin = { onJoin(group.id) },
                     onViewDetail = { onGroupSelected(group) },
                     onTagSelected = { tag ->
@@ -332,7 +362,9 @@ fun GroupListScreen(
     }
 }
 
-private const val FIVE_KM_METERS = 5_000f
+private const val FIVE_KM_THRESHOLD_KM = 5.0
+private const val MAX_SIMILAR_RESULTS = 3
+private const val MAX_NEARBY_RESULTS = 3
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -341,6 +373,7 @@ private fun GroupRow(
     isMember: Boolean,
     isJoining: Boolean,
     isLeader: Boolean,
+    distanceKm: Double?,
     onJoin: () -> Unit,
     onViewDetail: () -> Unit,
     onTagSelected: (String) -> Unit
@@ -368,10 +401,24 @@ private fun GroupRow(
                 )
             }
             Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = stringResource(id = R.string.group_date_format, group.date.ifEmpty { stringResource(id = R.string.group_date_unknown) }),
-                style = MaterialTheme.typography.bodyMedium
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = stringResource(
+                        id = R.string.group_date_format,
+                        group.date.ifEmpty { stringResource(id = R.string.group_date_unknown) }
+                    ),
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.weight(1f)
+                )
+                distanceKm?.let {
+                    Text(
+                        text = stringResource(id = R.string.group_distance_short_format, it),
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = TextAlign.End,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
+            }
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = group.description,
