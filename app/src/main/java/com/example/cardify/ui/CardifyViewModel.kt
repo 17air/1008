@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cardify.UserSession
 import com.example.cardify.data.GroupRepository
-import com.example.cardify.data.model.ChatMessage
 import com.example.cardify.data.model.Group
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.Dispatchers
@@ -36,30 +35,16 @@ class CardifyViewModel : ViewModel() {
             initialValue = emptyList()
         )
 
-    init {
-        viewModelScope.launch {
-            runCatching {
-                GroupRepository.createOrUpdateUser(userId, _userName.value, _userTag.value)
-            }
-        }
-    }
-
     fun updateUserName(name: String) {
         if (name == _userName.value) return
         _userName.value = name
         UserSession.userName = name
-        viewModelScope.launch {
-            runCatching { GroupRepository.createOrUpdateUser(userId, name, _userTag.value) }
-        }
     }
 
     fun updateUserTag(tag: String) {
         if (tag == _userTag.value) return
         _userTag.value = tag
         UserSession.userTag = tag
-        viewModelScope.launch {
-            runCatching { GroupRepository.createOrUpdateUser(userId, _userName.value, tag) }
-        }
     }
 
     fun joinGroup(groupId: String) {
@@ -105,29 +90,6 @@ class CardifyViewModel : ViewModel() {
                 started = SharingStarted.WhileSubscribed(5_000),
                 initialValue = null
             )
-    }
-
-    fun chatMessages(groupId: String): StateFlow<List<ChatMessage>> {
-        return GroupRepository.observeChatMessages(groupId)
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5_000),
-                initialValue = emptyList()
-            )
-    }
-
-    suspend fun sendMessage(groupId: String, text: String) {
-        val message = ChatMessage(
-            userId = userId,
-            userName = displayName().ifEmpty { "익명" },
-            body = text.trim(),
-            sentAt = System.currentTimeMillis()
-        )
-        withContext(Dispatchers.IO) {
-            if (message.body.isNotEmpty()) {
-                GroupRepository.sendMessage(groupId, message)
-            }
-        }
     }
 
     fun updateGroup(group: Group) {

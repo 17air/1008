@@ -1,22 +1,18 @@
 package com.example.cardify.ui
 
-import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ModalBottomSheet
@@ -37,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -47,7 +42,6 @@ import com.example.cardify.R
 import com.example.cardify.UserSession
 import com.example.cardify.ai.LocalTagRecommender
 import com.example.cardify.data.model.Group
-import com.example.cardify.ui.chat.GroupChatScreen
 import com.example.cardify.ui.create.GroupCreateScreen
 import com.example.cardify.ui.detail.GroupDetailScreen
 import com.example.cardify.ui.joined.JoinedGroupsScreen
@@ -60,7 +54,6 @@ private const val MAP_ROUTE = "map_screen"
 private const val LIST_ROUTE = "group_list"
 private const val CREATE_ROUTE = "group_create"
 private const val DETAIL_ROUTE = "group_detail"
-private const val CHAT_ROUTE = "group_chat"
 private const val JOINED_ROUTE = "joined_groups"
 private const val OWNED_ROUTE = "owned_groups"
 
@@ -94,19 +87,6 @@ fun CardifyApp(viewModel: CardifyViewModel = viewModel()) {
 
     val isMapRoute = currentRoute.startsWith(MAP_ROUTE)
 
-    val fab: (@Composable () -> Unit)? = if (isMapRoute) {
-        {
-            FloatingActionButton(onClick = { showActionSheet = true }) {
-                Icon(
-                    imageVector = Icons.Filled.Add,
-                    contentDescription = stringResource(id = R.string.group_actions_fab)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(text = stringResource(id = R.string.group_actions_fab_label))
-            }
-        }
-    } else null
-
     Scaffold(
         topBar = {
             if (isMapRoute) {
@@ -117,8 +97,7 @@ fun CardifyApp(viewModel: CardifyViewModel = viewModel()) {
                     onUserTagChanged = { viewModel.updateUserTag(it) }
                 )
             }
-        },
-        floatingActionButton = { fab?.invoke() }
+        }
     ) { innerPadding ->
         NavHost(
             navController = navController,
@@ -129,7 +108,8 @@ fun CardifyApp(viewModel: CardifyViewModel = viewModel()) {
                 MapScreen(
                     groups = groups,
                     onGroupSelected = { group -> navController.navigate("$DETAIL_ROUTE/${group.id}") },
-                    onOpenList = { navController.navigate(LIST_ROUTE) }
+                    onOpenList = { navController.navigate(LIST_ROUTE) },
+                    onOpenMore = { showActionSheet = true }
                 )
             }
             composable(LIST_ROUTE) {
@@ -196,32 +176,7 @@ fun CardifyApp(viewModel: CardifyViewModel = viewModel()) {
                     currentUserId = UserSession.userId,
                     isJoining = joiningGroups.contains(groupId),
                     onBack = { navController.popBackStack() },
-                    onJoin = { viewModel.joinGroup(groupId) },
-                    onOpenChat = { group -> navigateToChat(navController, group) }
-                )
-            }
-            composable(
-                route = "$CHAT_ROUTE/{groupId}?title={title}",
-                arguments = listOf(
-                    navArgument("groupId") { type = NavType.StringType },
-                    navArgument("title") {
-                        type = NavType.StringType
-                        defaultValue = ""
-                        nullable = true
-                    }
-                )
-            ) { entry ->
-                val groupId = entry.arguments?.getString("groupId") ?: return@composable
-                val title = entry.arguments?.getString("title").orEmpty()
-                val messagesState = viewModel.chatMessages(groupId).collectAsStateWithLifecycle()
-                GroupChatScreen(
-                    title = title,
-                    messages = messagesState.value,
-                    currentUserId = UserSession.userId,
-                    onBack = { navController.popBackStack() },
-                    onSendMessage = { text ->
-                        coroutineScope.launch { viewModel.sendMessage(groupId, text) }
-                    }
+                    onJoin = { viewModel.joinGroup(groupId) }
                 )
             }
         }
@@ -259,11 +214,6 @@ fun CardifyApp(viewModel: CardifyViewModel = viewModel()) {
             )
         }
     }
-}
-
-private fun navigateToChat(navController: NavHostController, group: Group) {
-    val encodedTitle = Uri.encode(group.title)
-    navController.navigate("$CHAT_ROUTE/${group.id}?title=$encodedTitle")
 }
 
 @Composable

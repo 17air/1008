@@ -22,7 +22,6 @@
     <string name="group_leader_format">모임장: %1$s</string>
     <string name="group_leader_badge">모임장</string>
 
-    <string name="group_open_chat">채팅 열기</string>
     <string name="group_view_details">상세 보기</string>
     <string name="group_join_button">참여하기</string>
     <string name="group_joining_button">참여 처리 중…</string>
@@ -36,6 +35,7 @@
     <string name="group_tags_hint">태그 (쉼표로 구분)</string>
     <string name="group_recommended_tags_label">추천 태그</string>
     <string name="group_recommended_tags_empty">추천할 태그를 입력 내용에 맞춰 알려드려요.</string>
+    <string name="group_date_placeholder">날짜 선택</string>
     <string name="group_create_location_instruction">지도를 길게 눌러 소모임 위치를 선택하세요.</string>
     <string name="group_create_marker_title">소모임 위치</string>
     <string name="group_create_selected_location">선택한 위치: %1$.4f, %2$.4f</string>
@@ -50,11 +50,6 @@
     <string name="recommended_tags_none">추천할 태그가 없습니다.</string>
     <string name="use_current_location">현재 위치 사용</string>
 
-    <string name="group_chat_title">소모임 채팅</string>
-    <string name="group_chat_empty">첫 메시지를 남겨보세요.</string>
-    <string name="group_chat_message_hint">메시지를 입력하세요</string>
-    <string name="group_chat_send">전송</string>
-
     <string name="auth_failed">사용자 정보를 초기화할 수 없습니다.</string>
     <string name="unknown_error">문제가 발생했습니다. 잠시 후 다시 시도하세요.</string>
     <string name="back">뒤로가기</string>
@@ -67,8 +62,7 @@
     <string name="map_groups_count_format">주변 소모임 %1$d개</string>
     <string name="map_groups_hint">지도를 탐색하거나 목록을 열어 자세히 확인하세요.</string>
     <string name="map_open_list">All Groups (%1$d)</string>
-    <string name="group_actions_fab">소모임 메뉴 열기</string>
-    <string name="group_actions_fab_label">Check More Options</string>
+    <string name="map_open_list_secondary">All Groups</string>
     <string name="action_joined_groups">가입된 소모임</string>
     <string name="action_joined_groups_hint">참여 중인 모임을 확인해요.</string>
     <string name="action_create_group">소모임 생성</string>
@@ -91,5 +85,4 @@
     <string name="group_detail_tags_empty">등록된 태그가 없습니다.</string>
     <string name="group_detail_location_summary">위치: %1$.4f, %2$.4f</string>
     <string name="group_detail_location_missing">등록된 위치 정보가 없습니다.</string>
-    <string name="group_detail_open_chat">채팅 참여</string>
 </resources>

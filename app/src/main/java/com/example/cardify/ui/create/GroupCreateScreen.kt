@@ -1,6 +1,7 @@
 package com.example.cardify.ui.create
 
 import android.Manifest
+import android.app.DatePickerDialog
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.text.KeyboardOptions
@@ -39,7 +41,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.example.cardify.R
@@ -57,6 +58,9 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -72,6 +76,7 @@ fun GroupCreateScreen(
     var date by rememberSaveable { mutableStateOf("") }
     var tagsInput by rememberSaveable { mutableStateOf("") }
     var recommendedTags by remember { mutableStateOf<List<String>>(emptyList()) }
+    var showDatePicker by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
     val fusedClient = remember { LocationServices.getFusedLocationProviderClient(context) }
@@ -120,6 +125,29 @@ fun GroupCreateScreen(
     }
 
     val scrollState = rememberScrollState()
+    val calendar = remember { Calendar.getInstance() }
+    val dateFormatter = remember { SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) }
+
+    if (showDatePicker) {
+        if (date.isNotBlank()) {
+            runCatching { dateFormatter.parse(date) }
+                .onSuccess { parsed -> parsed?.let { calendar.time = it } }
+        }
+        val dialog = DatePickerDialog(
+            context,
+            { _, year, month, day ->
+                calendar.set(year, month, day)
+                date = dateFormatter.format(calendar.time)
+                showDatePicker = false
+            },
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        )
+        dialog.setOnDismissListener { showDatePicker = false }
+        dialog.show()
+        showDatePicker = false
+    }
 
     Column(
         modifier = Modifier
@@ -141,18 +169,39 @@ fun GroupCreateScreen(
             value = description,
             onValueChange = { description = it },
             label = { Text(stringResource(id = R.string.group_description_hint)) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(150.dp)
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
         )
         OutlinedTextField(
             value = date,
-            onValueChange = { date = it },
+            onValueChange = {},
+            readOnly = true,
             label = { Text(stringResource(id = R.string.group_date_hint)) },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { showDatePicker = true },
+            placeholder = { Text(text = stringResource(id = R.string.group_date_placeholder)) }
         )
+        if (recommendedTags.isNotEmpty()) {
+            Text(text = stringResource(id = R.string.group_recommended_tags_label), style = MaterialTheme.typography.titleSmall)
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                recommendedTags.forEach { tag ->
+                    AssistChip(
+                        onClick = { tagsInput = appendTag(tagsInput, tag) },
+                        label = { Text("#$tag") },
+                        colors = AssistChipDefaults.assistChipColors(
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer
+                        )
+                    )
+                }
+            }
+        } else {
+            Text(text = stringResource(id = R.string.group_recommended_tags_empty), style = MaterialTheme.typography.bodyMedium)
+        }
         OutlinedTextField(
             value = tagsInput,
             onValueChange = { tagsInput = it },
@@ -214,25 +263,6 @@ fun GroupCreateScreen(
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(text = stringResource(id = R.string.location_permission_denied), style = MaterialTheme.typography.bodySmall)
             }
-        }
-        if (recommendedTags.isNotEmpty()) {
-            Text(text = stringResource(id = R.string.group_recommended_tags_label), style = MaterialTheme.typography.titleSmall)
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                recommendedTags.forEach { tag ->
-                    AssistChip(
-                        onClick = { tagsInput = appendTag(tagsInput, tag) },
-                        label = { Text("#$tag") },
-                        colors = AssistChipDefaults.assistChipColors(
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer
-                        )
-                    )
-                }
-            }
-        } else {
-            Text(text = stringResource(id = R.string.group_recommended_tags_empty), style = MaterialTheme.typography.bodyMedium)
         }
         if (!errorMessage.isNullOrEmpty()) {
             Text(text = errorMessage, color = MaterialTheme.colorScheme.error)

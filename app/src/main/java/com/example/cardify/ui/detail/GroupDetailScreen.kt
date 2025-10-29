@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -45,7 +47,6 @@ fun GroupDetailScreen(
     isJoining: Boolean,
     onBack: () -> Unit,
     onJoin: (String) -> Unit,
-    onOpenChat: (Group) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -95,11 +96,14 @@ fun GroupDetailScreen(
             }
         }
 
+        val scrollState = rememberScrollState()
+
         Column(
             modifier = modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp),
+                .padding(16.dp)
+                .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             if (location != null) {
@@ -177,26 +181,18 @@ fun GroupDetailScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Button(
-                    onClick = { onJoin(group.id) },
-                    enabled = !isMember && !isJoining,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = when {
-                            isMember -> stringResource(id = R.string.group_joined_button)
-                            isJoining -> stringResource(id = R.string.group_joining_button)
-                            else -> stringResource(id = R.string.group_join_button)
-                        }
-                    )
-                }
-                Button(
-                    onClick = { onOpenChat(group) },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(text = stringResource(id = R.string.group_detail_open_chat))
-                }
+            Button(
+                onClick = { onJoin(group.id) },
+                enabled = !isMember && !isJoining,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = when {
+                        isMember -> stringResource(id = R.string.group_joined_button)
+                        isJoining -> stringResource(id = R.string.group_joining_button)
+                        else -> stringResource(id = R.string.group_join_button)
+                    }
+                )
             }
         }
     }

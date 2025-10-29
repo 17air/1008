@@ -1,15 +1,12 @@
 # Cardify
 
-Cardify is a Kotlin Android sample that blends Google Maps, Jetpack Compose UI, a Room-powered local cache, and Firebase services to deliver an offline-friendly social gathering experience. Users can discover nearby groups on a map, manage their own meetups, and chat in real time with other participants.
+Cardify is a Kotlin Android sample that blends Google Maps, Jetpack Compose UI, and a Room-powered local cache to deliver an offline-friendly social gathering experience. Users can discover nearby groups on a map, manage their own meetups, and explore smart tag suggestions – all without any network services beyond the map tiles themselves.
 
 ## Features
 - 🗺️ **Google Maps home screen** that launches by default, centers on the user's location, and shows every group as a marker.
-- 📋 **Composable navigation flow** covering the map, group list, detail, creation, chat, and management screens.
-- 🧭 **Floating action menu** for quick access to joined groups, creating a new group, or managing the groups you lead.
+- 📋 **Composable navigation flow** covering the map, group list, detail, creation, joined, and management screens.
 - 🗄️ **Room local database** seeded from bundled JSON (`seed_groups.json`, `recommended_tags.json`, `tag_embeddings.json`) to ensure sample meetups appear instantly offline.
-- 🔄 **Realtime Firestore sync** that mirrors remote changes into the local cache and keeps chat messages live across devices.
 - 🏷️ **Smart tag suggestions** that combine cosine-similarity embeddings with prefix matching so users can add relevant tags in a single tap.
-- 💬 **Group chat** streams backed by Firestore snapshot listeners for immediate message delivery.
 
 ## Project Structure
 ```
@@ -19,7 +16,7 @@ app/
  │   ├─ UserSession.kt               # Anonymous user info persisted in SharedPreferences
  │   ├─ ai/LocalTagRecommender.kt    # Offline tag embedding loader + recommendations
  │   ├─ data/
- │   │   ├─ GroupRepository.kt       # Room + Firestore coordinator and chat helpers
+ │   │   ├─ GroupRepository.kt       # Room coordinator that seeds and mutates local groups
  │   │   ├─ local/…                  # Room database entities, DAO, converters
  │   │   └─ model/…                  # Group & ChatMessage models
  │   └─ ui/
@@ -28,7 +25,6 @@ app/
  │       ├─ list/GroupListScreen.kt  # Recommendation-aware group listing
  │       ├─ detail/GroupDetailScreen.kt
  │       ├─ create/GroupCreateScreen.kt
- │       ├─ chat/GroupChatScreen.kt
  │       ├─ joined/JoinedGroupsScreen.kt
  │       └─ mygroups/MyOwnedGroupsScreen.kt
  └─ src/main/assets/
@@ -37,10 +33,8 @@ app/
      └─ tag_embeddings.json          # 768-dimension tag vectors for similarity
 ```
 
-## Google Maps & Firebase Setup
-1. Enable the **Maps SDK for Android** in Google Cloud Console and replace the placeholder API key in `app/src/main/res/values/strings.xml` (`google_maps_key`).
-2. Download your Firebase project's `google-services.json` and drop it into `app/`. The repo ships with a dummy config so the project compiles without secrets.
-3. Enable **Cloud Firestore** and **Authentication** (anonymous sign-in is sufficient) for realtime data sync and chat.
+## Google Maps Setup
+Enable the **Maps SDK for Android** in Google Cloud Console and replace the placeholder API key in `app/src/main/res/values/strings.xml` (`google_maps_key`).
 
 ## Running the App
 1. Open the project in **Android Studio Koala (or newer)**.
@@ -50,7 +44,7 @@ app/
 
 ## Offline Behaviour
 - The first launch seeds the Room database using the JSON assets so sample meetups appear immediately, even without a network connection.
-- If Firestore is unavailable, the app continues to operate on the local cache; chat messages fall back to in-memory streams until connectivity returns.
+- The entire group experience (creation, membership, recommendations) runs on the on-device Room database, so it continues to work offline by design.
 
 ## License
 This project is provided as-is for demo purposes.
