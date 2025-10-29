@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -24,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.example.cardify.R
 import com.example.cardify.data.model.Group
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun JoinedGroupsScreen(
     groups: List<Group>,
@@ -69,6 +71,7 @@ fun JoinedGroupsScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun JoinedGroupRow(group: Group, onClick: () -> Unit) {
     Surface(

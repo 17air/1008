@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -32,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import com.example.cardify.R
 import com.example.cardify.data.model.Group
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyOwnedGroupsScreen(
     groups: List<Group>,
@@ -179,6 +181,7 @@ fun MyOwnedGroupsScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun OwnedGroupRow(
     group: Group,
