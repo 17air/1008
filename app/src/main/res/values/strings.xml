@@ -68,6 +68,8 @@
     <string name="map_groups_hint">지도를 탐색하거나 목록을 열어 자세히 확인하세요.</string>
     <string name="map_open_list">전체 그룹(%1$d)</string>
     <string name="map_open_list_secondary">추가 메뉴 열기</string>
+    <string name="group_search_hint">소모임 검색</string>
+    <string name="group_search_empty">"%1$s"에 대한 검색 결과가 없습니다.</string>
     <string name="action_joined_groups">가입된 소모임</string>
     <string name="action_joined_groups_hint">참여 중인 모임을 확인해요.</string>
     <string name="action_create_group">소모임 생성</string>

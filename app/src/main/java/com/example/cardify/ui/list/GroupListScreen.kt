@@ -16,12 +16,16 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -29,12 +33,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import com.example.cardify.R
 import com.example.cardify.ai.LocalTagRecommender
 import com.example.cardify.data.model.Group
 import com.google.android.gms.maps.model.LatLng
-import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun GroupListScreen(
     groups: List<Group>,
@@ -85,6 +94,8 @@ fun GroupListScreen(
         }
     }
 
+    val highlightedLimited = remember(highlightedGroups) { highlightedGroups.take(5) }
+
     val nearbyGroups = remember(groups, userLocation) {
         if (userLocation == null) {
             emptyList()
@@ -114,21 +125,33 @@ fun GroupListScreen(
         }
     }
 
+    val nearbyLimited = remember(nearbyGroups) { nearbyGroups.take(5) }
+
     val listState = rememberLazyListState()
-    val coroutineScope = rememberCoroutineScope()
-    val indexById = remember(scoredGroups) {
-        scoredGroups.mapIndexed { index, (group, _) -> group.id to index }.toMap()
-    }
-    val scrollToGroup: (Group) -> Unit = remember(indexById) {
-        { group ->
-            val position = indexById[group.id]
-            if (position != null) {
-                coroutineScope.launch {
-                    val headerOffset = 4
-                    listState.animateScrollToItem(headerOffset + position)
-                }
+    var searchQuery by rememberSaveable { mutableStateOf("") }
+    var pendingScrollTarget by remember { mutableStateOf<Group?>(null) }
+
+    val filteredPairs = remember(scoredGroups, searchQuery) {
+        val query = searchQuery.trim()
+        if (query.isEmpty()) {
+            scoredGroups
+        } else {
+            scoredGroups.filter { (group, _) ->
+                group.title.contains(query, ignoreCase = true) ||
+                    group.description.contains(query, ignoreCase = true) ||
+                    group.tags.any { it.contains(query, ignoreCase = true) }
             }
-            onGroupHighlighted(group)
+        }
+    }
+
+    LaunchedEffect(pendingScrollTarget, filteredPairs) {
+        val target = pendingScrollTarget ?: return@LaunchedEffect
+        val position = filteredPairs.indexOfFirst { (group, _) -> group.id == target.id }
+        if (position >= 0) {
+            val headerOffset = 5
+            listState.animateScrollToItem(headerOffset + position)
+            onGroupHighlighted(target)
+            pendingScrollTarget = null
         }
     }
 
@@ -174,7 +197,7 @@ fun GroupListScreen(
                 } else {
                     normalizedUserTag
                 }
-                val similarCount = highlightedGroups.size
+                val similarCount = highlightedLimited.size
                 Text(
                     text = stringResource(
                         id = R.string.group_list_similar_header_full,
@@ -192,13 +215,16 @@ fun GroupListScreen(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 } else {
-                    highlightedGroups.forEach { group ->
+                    highlightedLimited.forEach { group ->
                         Text(
                             text = group.title,
                             color = MaterialTheme.colorScheme.primary,
                             textDecoration = TextDecoration.Underline,
                             style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.clickable { scrollToGroup(group) }
+                            modifier = Modifier.clickable {
+                                searchQuery = ""
+                                pendingScrollTarget = group
+                            }
                         )
                     }
                 }
@@ -212,7 +238,7 @@ fun GroupListScreen(
                     .padding(top = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                val nearbyCount = nearbyGroups.size
+                val nearbyCount = nearbyLimited.size
                 Text(
                     text = stringResource(
                         id = R.string.group_list_radius_header,
@@ -229,17 +255,31 @@ fun GroupListScreen(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 } else {
-                    nearbyGroups.forEach { group ->
+                    nearbyLimited.forEach { group ->
                         Text(
                             text = group.title,
                             color = MaterialTheme.colorScheme.primary,
                             textDecoration = TextDecoration.Underline,
                             style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.clickable { scrollToGroup(group) }
+                            modifier = Modifier.clickable {
+                                searchQuery = ""
+                                pendingScrollTarget = group
+                            }
                         )
                     }
                 }
             }
+        }
+
+        item {
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                label = { Text(text = stringResource(id = R.string.group_search_hint)) },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words)
+            )
         }
 
         item {
@@ -253,29 +293,37 @@ fun GroupListScreen(
             )
         }
 
-        if (scoredGroups.isEmpty()) {
+        if (filteredPairs.isEmpty()) {
             item {
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
                     tonalElevation = 2.dp
                 ) {
+                    val message = if (searchQuery.isBlank()) {
+                        stringResource(id = R.string.group_list_empty)
+                    } else {
+                        stringResource(id = R.string.group_search_empty, searchQuery)
+                    }
                     Text(
-                        text = stringResource(id = R.string.group_list_empty),
+                        text = message,
                         modifier = Modifier.padding(24.dp),
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
             }
         } else {
-            items(scoredGroups) { (group, _) ->
+            items(filteredPairs) { (group, _) ->
                 GroupRow(
                     group = group,
                     isMember = group.members.contains(userId),
                     isJoining = joiningGroups.contains(group.id),
                     isLeader = group.leaderId == userId,
                     onJoin = { onJoin(group.id) },
-                    onViewDetail = { onGroupSelected(group) }
+                    onViewDetail = { onGroupSelected(group) },
+                    onTagSelected = { tag ->
+                        searchQuery = tag
+                    }
                 )
             }
         }
@@ -284,6 +332,7 @@ fun GroupListScreen(
 
 private const val FIVE_KM_METERS = 5_000f
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun GroupRow(
     group: Group,
@@ -291,7 +340,8 @@ private fun GroupRow(
     isJoining: Boolean,
     isLeader: Boolean,
     onJoin: () -> Unit,
-    onViewDetail: () -> Unit
+    onViewDetail: () -> Unit,
+    onTagSelected: (String) -> Unit
 ) {
     Surface(
         shape = RoundedCornerShape(16.dp),
@@ -352,21 +402,18 @@ private fun GroupRow(
             }
             if (group.tags.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(8.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
                     group.tags.take(4).forEach { tag ->
-                        Surface(
-                            color = MaterialTheme.colorScheme.primaryContainer,
-                            shape = RoundedCornerShape(50),
-                            modifier = Modifier
-                                .padding(end = 4.dp)
-                        ) {
-                            Text(
-                                text = "#${tag}",
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                        AssistChip(
+                            onClick = { onTagSelected(tag) },
+                            label = { Text(text = "#$tag") },
+                            colors = AssistChipDefaults.assistChipColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer
                             )
-                        }
+                        )
                     }
                 }
             }
