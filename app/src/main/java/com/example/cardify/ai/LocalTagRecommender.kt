@@ -15,42 +15,36 @@ class LocalTagRecommender(context: Context) {
         if (tagEmbeddings.isEmpty()) {
             return fallbackTags(input)
         }
-        if (input.isBlank()) {
+
+        val query = input.trim()
+        if (query.isEmpty()) {
             return recommendedTags.take(MAX_RECOMMENDATIONS)
         }
-        val inputVec = embed(input)
-        val scoredTags = buildList {
-            for ((tag, embedding) in tagEmbeddings) {
-                val similarity = cosineSimilarity(embedding, inputVec)
-                if (!similarity.isNaN()) {
-                    add(tag to similarity)
-                }
+
+        val inputVec = embed(query)
+        val scoredTags = tagEmbeddings.mapNotNull { (tag, embedding) ->
+            val similarity = cosineSimilarity(embedding, inputVec)
+            if (similarity.isNaN()) {
+                null
+            } else {
+                tag to similarity
             }
         }.sortedByDescending { it.second }
 
         if (scoredTags.isEmpty()) {
-            return fallbackTags(input)
+            return fallbackTags(query)
         }
 
-        val filtered = scoredTags
-            .filter { it.second >= MIN_SIMILARITY_THRESHOLD }
-            .take(MAX_RECOMMENDATIONS)
-        val base = filtered.map { it.first }
-        if (base.size >= MAX_RECOMMENDATIONS) {
-            return base
+        val primary = scoredTags.take(MAX_RECOMMENDATIONS).map { it.first }
+        if (primary.size >= MAX_RECOMMENDATIONS) {
+            return primary
         }
 
-        val remaining = MAX_RECOMMENDATIONS - base.size
-        val fallback = fallbackTags(input)
-            .filterNot { base.contains(it) }
-            .take(remaining)
+        val fallback = fallbackTags(query)
+            .filterNot { tag -> primary.contains(tag) }
+            .take(MAX_RECOMMENDATIONS - primary.size)
 
-        val combined = base + fallback
-        if (combined.isNotEmpty()) {
-            return combined
-        }
-
-        return scoredTags.take(MAX_RECOMMENDATIONS).map { it.first }
+        return (primary + fallback).take(MAX_RECOMMENDATIONS)
     }
 
     fun embeddingForTag(tag: String): List<Float>? = tagEmbeddings[tag]
@@ -114,7 +108,6 @@ class LocalTagRecommender(context: Context) {
         private const val RECOMMENDED_TAGS_FILE = "recommended_tags.json"
         private const val VECTOR_SIZE = 768
         private const val NORMALIZATION_FACTOR = 1000f
-        private const val MIN_SIMILARITY_THRESHOLD = 0.2f
         private const val MAX_RECOMMENDATIONS = 3
         private const val LOG_TAG = "LocalTagRecommender"
         private const val FALLBACK_SEED = 2024

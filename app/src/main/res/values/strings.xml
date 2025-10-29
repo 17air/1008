@@ -35,7 +35,7 @@
     <string name="group_tags_hint">태그 (쉼표로 구분)</string>
     <string name="group_recommended_tags_label">추천 태그</string>
     <string name="group_recommended_tags_empty">추천할 태그를 입력 내용에 맞춰 알려드려요.</string>
-    <string name="group_date_placeholder">날짜 선택</string>
+    <string name="group_date_placeholder">일정을 입력하세요</string>
     <string name="group_create_location_instruction">지도를 길게 눌러 소모임 위치를 선택하세요.</string>
     <string name="group_create_marker_title">소모임 위치</string>
     <string name="group_create_selected_location">선택한 위치: %1$.4f, %2$.4f</string>

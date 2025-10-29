@@ -1,7 +1,6 @@
 package com.example.cardify.ui.create
 
 import android.Manifest
-import android.app.DatePickerDialog
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.text.KeyboardOptions
@@ -58,9 +56,6 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -76,7 +71,6 @@ fun GroupCreateScreen(
     var date by rememberSaveable { mutableStateOf("") }
     var tagsInput by rememberSaveable { mutableStateOf("") }
     var recommendedTags by remember { mutableStateOf<List<String>>(emptyList()) }
-    var showDatePicker by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
     val fusedClient = remember { LocationServices.getFusedLocationProviderClient(context) }
@@ -125,30 +119,6 @@ fun GroupCreateScreen(
     }
 
     val scrollState = rememberScrollState()
-    val calendar = remember { Calendar.getInstance() }
-    val dateFormatter = remember { SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) }
-
-    if (showDatePicker) {
-        if (date.isNotBlank()) {
-            runCatching { dateFormatter.parse(date) }
-                .onSuccess { parsed -> parsed?.let { calendar.time = it } }
-        }
-        val dialog = DatePickerDialog(
-            context,
-            { _, year, month, day ->
-                calendar.set(year, month, day)
-                date = dateFormatter.format(calendar.time)
-                showDatePicker = false
-            },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
-        )
-        dialog.setOnDismissListener { showDatePicker = false }
-        dialog.show()
-        showDatePicker = false
-    }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -166,21 +136,13 @@ fun GroupCreateScreen(
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
         )
         OutlinedTextField(
-            value = description,
-            onValueChange = { description = it },
-            label = { Text(stringResource(id = R.string.group_description_hint)) },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
-        )
-        OutlinedTextField(
             value = date,
-            onValueChange = {},
-            readOnly = true,
+            onValueChange = { date = it },
             label = { Text(stringResource(id = R.string.group_date_hint)) },
             modifier = Modifier
-                .fillMaxWidth()
-                .clickable { showDatePicker = true },
+                .fillMaxWidth(),
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
             placeholder = { Text(text = stringResource(id = R.string.group_date_placeholder)) }
         )
         if (recommendedTags.isNotEmpty()) {
@@ -202,6 +164,14 @@ fun GroupCreateScreen(
         } else {
             Text(text = stringResource(id = R.string.group_recommended_tags_empty), style = MaterialTheme.typography.bodyMedium)
         }
+        OutlinedTextField(
+            value = description,
+            onValueChange = { description = it },
+            label = { Text(stringResource(id = R.string.group_description_hint)) },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
+        )
         OutlinedTextField(
             value = tagsInput,
             onValueChange = { tagsInput = it },
