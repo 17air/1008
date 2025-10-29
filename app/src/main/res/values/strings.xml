@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Cardify</string>
+    <string name="google_maps_key">AIzaSyCScu-Xx8jiAuPp67x1HLdB_uRv9l_VxeM</string>
+
+    <string name="create_group">소모임 생성</string>
+    <string name="user_name_field_label">내 이름</string>
+    <string name="user_guest_placeholder">게스트</string>
+    <string name="user_tag_field_label">내 태그</string>
+    <string name="user_display_with_tag">%1$s ○ #%2$s</string>
+    <string name="user_tag_placeholder">태그 없음</string>
+
+    <string name="group_welcome_format">%1$s님, 어떤 모임을 찾고 계신가요?</string>
+    <string name="group_create_action">소모임 생성</string>
+    <string name="group_list_empty">등록된 소모임이 없습니다. 새로운 소모임을 만들어보세요.</string>
+    <string name="no_groups_found">표시할 소모임이 없습니다.</string>
+    <string name="group_recommended_badge">추천</string>
+    <string name="group_date_format">모임 일정: %1$s</string>
+    <string name="group_date_unknown">일정 미정</string>
+    <string name="group_member_count_format">참여 인원 %1$d명</string>
+    <string name="group_leader_format">모임장: %1$s</string>
+    <string name="group_leader_badge">모임장</string>
+
+    <string name="group_open_chat">채팅 열기</string>
+    <string name="group_view_details">상세 보기</string>
+    <string name="group_join_button">참여하기</string>
+    <string name="group_joining_button">참여 처리 중…</string>
+    <string name="group_joined_button">참여중</string>
+    <string name="join_group">소모임 참여</string>
+
+    <string name="group_create_title">소모임 만들기</string>
+    <string name="group_title_hint">모임 제목</string>
+    <string name="group_description_hint">모임 설명</string>
+    <string name="group_date_hint">모임 일정</string>
+    <string name="group_tags_hint">태그 (쉼표로 구분)</string>
+    <string name="group_recommended_tags_label">추천 태그</string>
+    <string name="group_recommended_tags_empty">추천할 태그를 입력 내용에 맞춰 알려드려요.</string>
+    <string name="group_create_location_instruction">지도를 길게 눌러 소모임 위치를 선택하세요.</string>
+    <string name="group_create_marker_title">소모임 위치</string>
+    <string name="group_create_selected_location">선택한 위치: %1$.4f, %2$.4f</string>
+    <string name="group_create_use_current_location">현재 위치 불러오기</string>
+    <string name="location_not_selected">모임 위치가 선택되지 않았습니다.</string>
+    <string name="location_permission_denied">위치 권한이 없어 기본 위치가 사용됩니다.</string>
+
+    <string name="group_title">모임 제목</string>
+    <string name="group_description">모임 설명</string>
+    <string name="group_tags">모임 태그</string>
+    <string name="group_max_people">최대 인원</string>
+    <string name="recommended_tags_none">추천할 태그가 없습니다.</string>
+    <string name="use_current_location">현재 위치 사용</string>
+
+    <string name="group_chat_title">소모임 채팅</string>
+    <string name="group_chat_empty">첫 메시지를 남겨보세요.</string>
+    <string name="group_chat_message_hint">메시지를 입력하세요</string>
+    <string name="group_chat_send">전송</string>
+
+    <string name="auth_failed">사용자 정보를 초기화할 수 없습니다.</string>
+    <string name="unknown_error">문제가 발생했습니다. 잠시 후 다시 시도하세요.</string>
+    <string name="back">뒤로가기</string>
+    <string name="close">닫기</string>
+    <string name="cancel">취소</string>
+    <string name="save">저장</string>
+    <string name="edit">편집</string>
+    <string name="delete">삭제</string>
+
+    <string name="map_groups_count_format">주변 소모임 %1$d개</string>
+    <string name="map_groups_hint">지도를 탐색하거나 목록을 열어 자세히 확인하세요.</string>
+    <string name="map_open_list">소모임 목록 보기</string>
+    <string name="group_actions_fab">소모임 메뉴 열기</string>
+    <string name="action_joined_groups">가입된 소모임</string>
+    <string name="action_joined_groups_hint">참여 중인 모임을 확인해요.</string>
+    <string name="action_create_group">소모임 생성</string>
+    <string name="action_create_group_hint">현재 위치에서 새 모임을 등록합니다.</string>
+    <string name="action_owned_groups">소모임 관리(모임장)</string>
+    <string name="action_owned_groups_hint">내가 만든 모임을 수정하거나 삭제합니다.</string>
+
+    <string name="joined_groups_title">가입된 소모임</string>
+    <string name="joined_groups_empty">참여 중인 소모임이 없습니다.</string>
+
+    <string name="owned_groups_title">내가 생성한 소모임</string>
+    <string name="owned_groups_empty">생성한 소모임이 없습니다.</string>
+    <string name="owned_groups_edit_title">소모임 정보 수정</string>
+    <string name="owned_groups_delete_title">소모임 삭제</string>
+    <string name="owned_groups_delete_message">"%1$s" 소모임을 삭제할까요? 삭제하면 되돌릴 수 없습니다.</string>
+
+    <string name="group_detail_loading">소모임 정보를 불러오는 중입니다…</string>
+    <string name="group_detail_description_header">모임 소개</string>
+    <string name="group_detail_tags_header">태그</string>
+    <string name="group_detail_tags_empty">등록된 태그가 없습니다.</string>
+    <string name="group_detail_location_summary">위치: %1$.4f, %2$.4f</string>
+    <string name="group_detail_location_missing">등록된 위치 정보가 없습니다.</string>
+    <string name="group_detail_open_chat">채팅 참여</string>
+</resources>

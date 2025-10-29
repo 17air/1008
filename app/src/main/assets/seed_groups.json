@@ -1,0 +1,41 @@
+[
+  {
+    "id": "seed-running",
+    "title": "새벽 러닝 크루",
+    "description": "평일 아침 한강에서 가볍게 달려요.",
+    "date": "매주 화/목 06:30",
+    "leaderId": "leader_running",
+    "leaderName": "러닝리더",
+    "tags": ["운동", "러닝", "건강"],
+    "members": ["leader_running"],
+    "latitude": 37.5512,
+    "longitude": 126.9882,
+    "createdAt": 1717286400000
+  },
+  {
+    "id": "seed-coffee",
+    "title": "카페 탐방 스터디",
+    "description": "주말마다 새로운 카페를 찾아가서 각자 프로젝트를 진행합니다.",
+    "date": "매주 토요일 14:00",
+    "leaderId": "coffee_maker",
+    "leaderName": "카페러",
+    "tags": ["카페", "코딩", "스터디"],
+    "members": ["coffee_maker"],
+    "latitude": 37.5663,
+    "longitude": 126.9779,
+    "createdAt": 1717200000000
+  },
+  {
+    "id": "seed-trip",
+    "title": "주말 여행 모임",
+    "description": "서울 근교 여행 같이 떠나요!",
+    "date": "2024-08-31",
+    "leaderId": "trip_host",
+    "leaderName": "여행가",
+    "tags": ["여행", "사진", "캠핑"],
+    "members": ["trip_host"],
+    "latitude": 37.5796,
+    "longitude": 126.9770,
+    "createdAt": 1717113600000
+  }
+]
