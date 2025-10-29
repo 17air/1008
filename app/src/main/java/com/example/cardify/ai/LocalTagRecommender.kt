@@ -65,27 +65,58 @@ class LocalTagRecommender(context: Context) {
         private const val NORMALIZATION_FACTOR = 1000f
         private const val LOG_TAG = "LocalTagRecommender"
         private const val FALLBACK_SEED = 2024
-        private val FALLBACK_TAGS = listOf("운동", "러닝", "여행", "스터디", "맛집")
+        private val FALLBACK_TAGS = listOf("운동", "러닝", "여행", "코딩", "요리")
     }
 
     private fun loadEmbeddings(context: Context): Map<String, List<Float>> {
-        return try {
-            val json = context.assets.open(TAG_EMBEDDINGS_FILE)
-                .bufferedReader()
-                .use { it.readText() }
-            val obj = JSONObject(json)
-            obj.keys().asSequence().associateWith { key ->
-                val arr = obj.getJSONArray(key)
-                List(arr.length()) { index -> arr.getDouble(index).toFloat() }
-            }.also { loaded ->
-                Log.d(LOG_TAG, "Loaded ${loaded.size} tag embeddings from assets")
+        val fromAssets = runCatching { loadEmbeddingsFromAssets(context) }
+            .onFailure { error ->
+                Log.w(
+                    LOG_TAG,
+                    "Failed to load $TAG_EMBEDDINGS_FILE from assets, falling back to dummy data",
+                    error
+                )
             }
-        } catch (e: Exception) {
-            Log.w(LOG_TAG, "Failed to load tag embeddings from assets, using fallback", e)
-            createFallbackEmbeddings().also {
-                Log.d(LOG_TAG, "Loaded ${it.size} fallback tag embeddings")
-            }
+            .getOrNull()
+
+        if (!fromAssets.isNullOrEmpty()) {
+            Log.d(
+                LOG_TAG,
+                "Loaded ${fromAssets.size} tag embeddings from assets (using real data)"
+            )
+            return fromAssets
         }
+
+        return createFallbackEmbeddings().also { fallback ->
+            Log.d(LOG_TAG, "Loaded ${fallback.size} dummy tag embeddings for offline usage")
+        }
+    }
+
+    private fun loadEmbeddingsFromAssets(context: Context): Map<String, List<Float>> {
+        val json = context.assets.open(TAG_EMBEDDINGS_FILE)
+            .bufferedReader()
+            .use { it.readText() }
+        val obj = JSONObject(json)
+        val embeddings = mutableMapOf<String, List<Float>>()
+        for (key in obj.keys()) {
+            val arr = obj.getJSONArray(key)
+            if (arr.length() != VECTOR_SIZE) {
+                Log.w(
+                    LOG_TAG,
+                    "Skipping tag '$key' because embedding length ${arr.length()} != $VECTOR_SIZE"
+                )
+                continue
+            }
+            val values = ArrayList<Float>(VECTOR_SIZE)
+            for (index in 0 until arr.length()) {
+                values.add(arr.getDouble(index).toFloat())
+            }
+            embeddings[key] = values
+        }
+        if (embeddings.isEmpty()) {
+            throw IllegalStateException("No valid tag embeddings found in assets")
+        }
+        return embeddings
     }
 
     private fun createFallbackEmbeddings(): Map<String, List<Float>> {
