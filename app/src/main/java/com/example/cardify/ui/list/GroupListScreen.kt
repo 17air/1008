@@ -1,5 +1,6 @@
 package com.example.cardify.ui.list
 
+import android.location.Location
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.example.cardify.R
 import com.example.cardify.ai.LocalTagRecommender
 import com.example.cardify.data.model.Group
+import com.google.android.gms.maps.model.LatLng
 
 @Composable
 fun GroupListScreen(
@@ -36,6 +38,7 @@ fun GroupListScreen(
     userId: String,
     userName: String,
     userTag: String,
+    userLocation: LatLng?,
     joiningGroups: Set<String>,
     recommender: LocalTagRecommender,
     onJoin: (String) -> Unit,
@@ -76,7 +79,35 @@ fun GroupListScreen(
                 .sortedByDescending { it.second }
                 .map { it.first }
                 .distinct()
-                .take(3)
+        }
+    }
+
+    val nearbyGroups = remember(groups, userLocation) {
+        if (userLocation == null) {
+            emptyList()
+        } else {
+            groups.mapNotNull { group ->
+                if (group.latitude == 0.0 && group.longitude == 0.0) {
+                    null
+                } else {
+                    val results = FloatArray(1)
+                    Location.distanceBetween(
+                        userLocation.latitude,
+                        userLocation.longitude,
+                        group.latitude,
+                        group.longitude,
+                        results
+                    )
+                    val distanceMeters = results.firstOrNull() ?: Float.NaN
+                    if (distanceMeters.isNaN() || distanceMeters > FIVE_KM_METERS) {
+                        null
+                    } else {
+                        group to distanceMeters
+                    }
+                }
+            }
+                .sortedBy { it.second }
+                .map { it.first }
         }
     }
 
@@ -109,21 +140,74 @@ fun GroupListScreen(
             }
         }
 
-        if (highlightedGroups.isNotEmpty()) {
-            item {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 4.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
+        item {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                val tagLabel = if (normalizedUserTag.isBlank()) {
+                    stringResource(id = R.string.group_list_tag_unknown)
+                } else {
+                    normalizedUserTag
+                }
+                val similarCount = highlightedGroups.size
+                Text(
+                    text = stringResource(
+                        id = R.string.group_list_similar_header_full,
+                        tagLabel,
+                        similarCount
+                    ),
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                if (similarCount == 0) {
                     Text(
-                        text = stringResource(id = R.string.group_list_similar_header),
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.primary
+                        text = stringResource(id = R.string.group_list_similar_empty),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+                } else {
                     highlightedGroups.forEach { group ->
+                        Text(
+                            text = group.title,
+                            color = MaterialTheme.colorScheme.primary,
+                            textDecoration = TextDecoration.Underline,
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.clickable { onGroupHighlighted(group) }
+                        )
+                    }
+                }
+            }
+        }
+
+        item {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                val nearbyCount = nearbyGroups.size
+                Text(
+                    text = stringResource(
+                        id = R.string.group_list_radius_header,
+                        nearbyCount
+                    ),
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                if (nearbyCount == 0) {
+                    Text(
+                        text = stringResource(id = R.string.group_list_radius_empty),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                } else {
+                    nearbyGroups.forEach { group ->
                         Text(
                             text = group.title,
                             color = MaterialTheme.colorScheme.primary,
@@ -175,6 +259,8 @@ fun GroupListScreen(
         }
     }
 }
+
+private const val FIVE_KM_METERS = 5_000f
 
 @Composable
 private fun GroupRow(

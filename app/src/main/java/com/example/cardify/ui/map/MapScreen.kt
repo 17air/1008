@@ -58,6 +58,8 @@ fun MapScreen(
     onGroupSelected: (Group) -> Unit,
     onOpenList: () -> Unit,
     onOpenMore: () -> Unit,
+    userLocation: LatLng?,
+    onUserLocationChanged: (LatLng?) -> Unit,
     focusedGroupId: String?,
     onFocusConsumed: () -> Unit,
     modifier: Modifier = Modifier
@@ -84,27 +86,40 @@ fun MapScreen(
         }
     }
 
-    var userLocation by rememberSaveable { mutableStateOf<LatLng?>(null) }
+    var internalUserLocation by rememberSaveable { mutableStateOf<LatLng?>(userLocation) }
     var hasCenteredMap by rememberSaveable { mutableStateOf(false) }
     val defaultCenter = remember { DefaultSeoulLatLng }
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(defaultCenter, 12f)
     }
 
+    LaunchedEffect(userLocation) {
+        if (userLocation != null && userLocation != internalUserLocation) {
+            internalUserLocation = userLocation
+        }
+    }
+
+    val updateLocation: (LatLng?) -> Unit = { location ->
+        if (location != internalUserLocation) {
+            internalUserLocation = location
+            onUserLocationChanged(location)
+        }
+    }
+
     LaunchedEffect(hasPermission) {
         if (hasPermission) {
             val location = fetchCurrentLocation(fusedClient)
             if (location != null) {
-                userLocation = location
+                updateLocation(location)
             }
         }
     }
 
-    LaunchedEffect(userLocation) {
-        val target = userLocation ?: defaultCenter
-        if (!hasCenteredMap || userLocation != null) {
+    LaunchedEffect(internalUserLocation) {
+        val target = internalUserLocation ?: defaultCenter
+        if (!hasCenteredMap || internalUserLocation != null) {
             cameraPositionState.animate(
-                CameraUpdateFactory.newLatLngZoom(target, if (userLocation != null) 13f else 12f)
+                CameraUpdateFactory.newLatLngZoom(target, if (internalUserLocation != null) 13f else 12f)
             )
             hasCenteredMap = true
         }

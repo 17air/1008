@@ -48,6 +48,7 @@ import com.example.cardify.ui.joined.JoinedGroupsScreen
 import com.example.cardify.ui.list.GroupListScreen
 import com.example.cardify.ui.map.MapScreen
 import com.example.cardify.ui.mygroups.MyOwnedGroupsScreen
+import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.launch
 
 private const val MAP_ROUTE = "map_screen"
@@ -76,6 +77,7 @@ fun CardifyApp(viewModel: CardifyViewModel = viewModel()) {
     val context = LocalContext.current
     val recommender = remember { LocalTagRecommender(context) }
     val coroutineScope = rememberCoroutineScope()
+    var userLocation by remember { mutableStateOf<LatLng?>(null) }
 
     var createError by rememberSaveable { mutableStateOf<String?>(null) }
     var isCreating by rememberSaveable { mutableStateOf(false) }
@@ -111,6 +113,8 @@ fun CardifyApp(viewModel: CardifyViewModel = viewModel()) {
                     onGroupSelected = { group -> navController.navigate("$DETAIL_ROUTE/${group.id}") },
                     onOpenList = { navController.navigate(LIST_ROUTE) },
                     onOpenMore = { showActionSheet = true },
+                    userLocation = userLocation,
+                    onUserLocationChanged = { userLocation = it },
                     focusedGroupId = focusedGroupId,
                     onFocusConsumed = { viewModel.clearFocusedGroup() }
                 )
@@ -121,6 +125,7 @@ fun CardifyApp(viewModel: CardifyViewModel = viewModel()) {
                     userId = UserSession.userId,
                     userName = userName,
                     userTag = userTag,
+                    userLocation = userLocation,
                     joiningGroups = joiningGroups,
                     recommender = recommender,
                     onJoin = { viewModel.joinGroup(it) },

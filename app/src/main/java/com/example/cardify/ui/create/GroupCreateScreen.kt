@@ -136,6 +136,16 @@ fun GroupCreateScreen(
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
         )
         OutlinedTextField(
+            value = date,
+            onValueChange = { date = it },
+            label = { Text(stringResource(id = R.string.group_date_hint)) },
+            modifier = Modifier
+                .fillMaxWidth(),
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
+            placeholder = { Text(text = stringResource(id = R.string.group_date_placeholder)) }
+        )
+        OutlinedTextField(
             value = description,
             onValueChange = { description = it },
             label = { Text(stringResource(id = R.string.group_description_hint)) },
@@ -169,16 +179,6 @@ fun GroupCreateScreen(
             singleLine = false,
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words)
-        )
-        OutlinedTextField(
-            value = date,
-            onValueChange = { date = it },
-            label = { Text(stringResource(id = R.string.group_date_hint)) },
-            modifier = Modifier
-                .fillMaxWidth(),
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
-            placeholder = { Text(text = stringResource(id = R.string.group_date_placeholder)) }
         )
         Text(
             text = stringResource(id = R.string.group_create_location_instruction),

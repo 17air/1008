@@ -17,32 +17,30 @@ class LocalTagRecommender(context: Context) {
             return recommendedTags.take(MAX_RECOMMENDATIONS)
         }
 
-        val suggestions = mutableListOf<String>()
+        val suggestions = linkedSetOf<String>()
 
         if (tagEmbeddings.isNotEmpty()) {
             val normalized = query.lowercase()
             tagEmbeddings.keys
                 .filter { normalized.contains(it.lowercase()) }
-                .forEach { tag ->
-                    if (!suggestions.contains(tag)) suggestions.add(tag)
-                }
+                .forEach { tag -> suggestions.add(tag) }
 
             val inputVec = embed(query)
             tagEmbeddings.mapNotNull { (tag, embedding) ->
                 val similarity = cosineSimilarity(embedding, inputVec)
                 if (similarity.isNaN()) null else tag to similarity
             }
+                .filter { it.second >= SIMILARITY_THRESHOLD }
                 .sortedByDescending { it.second }
                 .forEach { (tag, _) ->
-                    if (suggestions.size < MAX_RECOMMENDATIONS && !suggestions.contains(tag)) {
+                    if (suggestions.size < MAX_RECOMMENDATIONS) {
                         suggestions.add(tag)
                     }
                 }
         }
 
-        if (suggestions.size < MAX_RECOMMENDATIONS) {
+        if (suggestions.isEmpty()) {
             fallbackTags(query)
-                .filterNot { suggestions.contains(it) }
                 .forEach { tag ->
                     if (suggestions.size < MAX_RECOMMENDATIONS) {
                         suggestions.add(tag)
@@ -50,7 +48,7 @@ class LocalTagRecommender(context: Context) {
                 }
         }
 
-        return suggestions.take(MAX_RECOMMENDATIONS)
+        return suggestions.take(MAX_RECOMMENDATIONS).toList()
     }
 
     fun embeddingForTag(tag: String): List<Float>? = tagEmbeddings[tag]
@@ -115,6 +113,7 @@ class LocalTagRecommender(context: Context) {
         private const val VECTOR_SIZE = 768
         private const val NORMALIZATION_FACTOR = 1000f
         private const val MAX_RECOMMENDATIONS = 3
+        private const val SIMILARITY_THRESHOLD = 0.25f
         private const val LOG_TAG = "LocalTagRecommender"
         private const val FALLBACK_SEED = 2024
         private val FALLBACK_TAGS = listOf("운동", "러닝", "여행", "코딩", "요리")
