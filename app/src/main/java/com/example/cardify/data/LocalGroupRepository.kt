@@ -12,6 +12,10 @@ object LocalGroupRepository {
 
     class GroupFullException : IllegalStateException("Group is full")
     class GroupNotFoundException : IllegalStateException("Group not found")
+    class NotGroupOwnerException : IllegalStateException("Only owner can modify the group")
+    class MaxPeopleTooLowException(val requiredMin: Int) : IllegalStateException(
+        "Max people cannot be lower than current members ($requiredMin)"
+    )
 
     private val groups = mutableListOf<Group>()
     private val members = mutableMapOf<String, MutableList<Member>>()
@@ -163,6 +167,69 @@ object LocalGroupRepository {
                 }
             }
             notifyMembership(groupId, userId)
+            onSuccess()
+        } catch (exception: Exception) {
+            onError(exception)
+        }
+    }
+
+    fun updateGroup(
+        groupId: String,
+        ownerId: String,
+        title: String,
+        description: String,
+        tags: List<String>,
+        maxPeople: Int,
+        onSuccess: () -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        try {
+            initialize()
+            val index = groups.indexOfFirst { it.id == groupId }
+            if (index == -1) throw GroupNotFoundException()
+            val current = groups[index]
+            if (current.ownerId != ownerId) throw NotGroupOwnerException()
+            val memberList = members.getOrPut(groupId) { mutableListOf() }
+            val currentMembers = memberList.size
+            if (maxPeople < currentMembers) {
+                throw MaxPeopleTooLowException(currentMembers)
+            }
+            val updated = current.copy(
+                title = title,
+                description = description,
+                tags = tags,
+                maxPeople = maxPeople
+            )
+            groups[index] = updated
+            notifyGroupList()
+            notifyGroup(groupId)
+            onSuccess()
+        } catch (exception: Exception) {
+            onError(exception)
+        }
+    }
+
+    fun deleteGroup(
+        groupId: String,
+        ownerId: String,
+        onSuccess: () -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        try {
+            initialize()
+            val index = groups.indexOfFirst { it.id == groupId }
+            if (index == -1) throw GroupNotFoundException()
+            val group = groups[index]
+            if (group.ownerId != ownerId) throw NotGroupOwnerException()
+            groups.removeAt(index)
+            val removedMembers = members.remove(groupId) ?: emptyList()
+            notifyGroupList()
+            notifyGroup(groupId)
+            val affectedUserIds = removedMembers.map { it.userId }.toMutableSet()
+            affectedUserIds.add(group.ownerId)
+            affectedUserIds.forEach { userId ->
+                notifyMembership(groupId, userId)
+            }
             onSuccess()
         } catch (exception: Exception) {
             onError(exception)

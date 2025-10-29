@@ -1,7 +1,9 @@
 package com.example.cardify.ui.components
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
@@ -17,7 +19,8 @@ import com.example.cardify.data.model.Group
 @Composable
 fun GroupSummaryCard(
     group: Group,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    actions: (@Composable () -> Unit)? = null
 ) {
     ElevatedCard(
         modifier = Modifier
@@ -43,6 +46,10 @@ fun GroupSummaryCard(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.primary
             )
+            if (actions != null) {
+                Spacer(modifier = Modifier.height(12.dp))
+                actions()
+            }
         }
     }
 }
