@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "895685705077",
+    "project_id": "cardify-de70a",
+    "storage_bucket": "cardify-de70a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:895685705077:android:ea40f427b66b4b008a273c",
+        "android_client_info": {
+          "package_name": "com.example.cardify"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAKg_zYS6lZxo_Q62VzeXTaGE8P89Ab7N0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
