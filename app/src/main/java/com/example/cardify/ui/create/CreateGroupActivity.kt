@@ -49,11 +49,7 @@ class CreateGroupActivity : AppCompatActivity() {
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-        tagRecommender = try {
-            LocalTagRecommender(applicationContext)
-        } catch (e: Exception) {
-            null
-        }
+        tagRecommender = LocalTagRecommender(applicationContext)
         updateRecommendedTags(emptyList())
 
         binding.descriptionInput.doOnTextChanged { text, _, _, _ ->

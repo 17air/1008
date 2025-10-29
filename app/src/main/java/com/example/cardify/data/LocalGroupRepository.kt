@@ -174,8 +174,14 @@ object LocalGroupRepository {
     private fun findGroup(groupId: String): Group? =
         groups.firstOrNull { it.id == groupId }?.copy()
 
+    fun isUserMember(groupId: String, userId: String): Boolean {
+        initialize()
+        if (userId.isBlank()) return false
+        return members[groupId]?.any { it.userId == userId } == true
+    }
+
     private fun isMember(groupId: String, userId: String): Boolean =
-        members[groupId]?.any { it.userId == userId } == true
+        isUserMember(groupId, userId)
 
     private fun notifyGroupList() {
         val snapshot = currentGroups()

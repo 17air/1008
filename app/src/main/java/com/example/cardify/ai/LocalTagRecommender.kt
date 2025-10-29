@@ -4,25 +4,10 @@ import android.content.Context
 import android.util.Log
 import org.json.JSONObject
 import kotlin.math.sqrt
+import kotlin.random.Random
 
 class LocalTagRecommender(context: Context) {
-    private val tagEmbeddings: Map<String, List<Float>>
-
-    init {
-        tagEmbeddings = try {
-            val json = context.assets.open(TAG_EMBEDDINGS_FILE)
-                .bufferedReader()
-                .use { it.readText() }
-            val obj = JSONObject(json)
-            obj.keys().asSequence().associateWith { key ->
-                val arr = obj.getJSONArray(key)
-                List(arr.length()) { index -> arr.getDouble(index).toFloat() }
-            }
-        } catch (e: Exception) {
-            Log.w(LOG_TAG, "Failed to load tag embeddings", e)
-            emptyMap()
-        }
-    }
+    private val tagEmbeddings: Map<String, List<Float>> = loadEmbeddings(context)
 
     fun recommendTags(input: String): List<String> {
         if (input.isBlank() || tagEmbeddings.isEmpty()) {
@@ -79,5 +64,34 @@ class LocalTagRecommender(context: Context) {
         private const val VECTOR_SIZE = 384
         private const val NORMALIZATION_FACTOR = 1000f
         private const val LOG_TAG = "LocalTagRecommender"
+        private const val FALLBACK_SEED = 2024
+        private val FALLBACK_TAGS = listOf("운동", "러닝", "여행", "스터디", "맛집")
+    }
+
+    private fun loadEmbeddings(context: Context): Map<String, List<Float>> {
+        return try {
+            val json = context.assets.open(TAG_EMBEDDINGS_FILE)
+                .bufferedReader()
+                .use { it.readText() }
+            val obj = JSONObject(json)
+            obj.keys().asSequence().associateWith { key ->
+                val arr = obj.getJSONArray(key)
+                List(arr.length()) { index -> arr.getDouble(index).toFloat() }
+            }.also { loaded ->
+                Log.d(LOG_TAG, "Loaded ${loaded.size} tag embeddings from assets")
+            }
+        } catch (e: Exception) {
+            Log.w(LOG_TAG, "Failed to load tag embeddings from assets, using fallback", e)
+            createFallbackEmbeddings().also {
+                Log.d(LOG_TAG, "Loaded ${it.size} fallback tag embeddings")
+            }
+        }
+    }
+
+    private fun createFallbackEmbeddings(): Map<String, List<Float>> {
+        val random = Random(FALLBACK_SEED)
+        return FALLBACK_TAGS.associateWith {
+            List(VECTOR_SIZE) { random.nextFloat() }
+        }
     }
 }

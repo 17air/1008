@@ -11,12 +11,22 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.stringResource
 import com.example.cardify.R
 import com.example.cardify.UserSession
 import com.example.cardify.data.LocalGroupRepository
 import com.example.cardify.data.LocalGroupRepository.ListenerRegistration
 import com.example.cardify.data.model.Group
 import com.example.cardify.databinding.ActivityMainBinding
+import com.example.cardify.ui.actions.GroupActionsBottomSheet
 import com.example.cardify.ui.create.CreateGroupActivity
 import com.example.cardify.ui.detail.GroupDetailActivity
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -30,7 +40,11 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 
-class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+class MainActivity :
+    AppCompatActivity(),
+    OnMapReadyCallback,
+    GoogleMap.OnMarkerClickListener,
+    GroupActionsBottomSheet.ActionHandler {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -67,9 +81,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
         binding.groupRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.groupRecyclerView.adapter = groupAdapter
-        binding.createGroupFab.setOnClickListener {
-            startActivity(Intent(this, CreateGroupActivity::class.java))
-        }
+        setupFloatingActionButton(binding.createGroupFab)
 
         binding.loadingIndicator.isVisible = true
 
@@ -97,6 +109,17 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         super.onDestroy()
         groupListener?.remove()
         groupListener = null
+    }
+
+    override fun onRequestCreateGroup() {
+        startActivity(Intent(this, CreateGroupActivity::class.java))
+    }
+
+    override fun onRequestOpenGroupDetail(groupId: String) {
+        groupAdapter.currentList.firstOrNull { it.id == groupId }?.let { group ->
+            focusGroupOnMap(group)
+        }
+        startActivity(GroupDetailActivity.createIntent(this, groupId))
     }
 
     override fun onMapReady(map: GoogleMap) {
@@ -139,6 +162,35 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 }
             }
         )
+    }
+
+    private fun showGroupActionsSheet() {
+        val existing = supportFragmentManager.findFragmentByTag(GroupActionsBottomSheet.TAG)
+        if (existing != null && existing.isAdded) {
+            return
+        }
+        GroupActionsBottomSheet().show(supportFragmentManager, GroupActionsBottomSheet.TAG)
+    }
+
+    private fun setupFloatingActionButton(composeView: ComposeView) {
+        composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+        composeView.setContent {
+            MaterialTheme {
+                FloatingActionButtonContent { showGroupActionsSheet() }
+            }
+        }
+    }
+
+    @Composable
+    private fun FloatingActionButtonContent(onClick: () -> Unit) {
+        val label = stringResource(id = R.string.create_group)
+        FloatingActionButton(
+            onClick = onClick,
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary
+        ) {
+            Icon(imageVector = Icons.Default.Add, contentDescription = label)
+        }
     }
 
     private fun renderMarkers(groups: List<Group>) {

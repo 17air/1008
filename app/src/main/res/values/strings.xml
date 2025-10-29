@@ -31,4 +31,18 @@
     <string name="invalid_max_people">최대 인원을 올바르게 입력해주세요.</string>
     <string name="recommended_tags_label">추천 태그: %1$s</string>
     <string name="recommended_tags_none">추천 태그를 확인하려면 모임 설명을 입력하세요.</string>
+    <string name="back">뒤로가기</string>
+    <string name="group_actions_menu_title">소모임 메뉴</string>
+    <string name="group_actions_joined_groups">소모임 참여 목록</string>
+    <string name="group_actions_joined_groups_hint">참여 중인 소모임을 확인해요.</string>
+    <string name="group_actions_create_group">소모임 생성</string>
+    <string name="group_actions_create_group_hint">새로운 소모임을 만들어 보세요.</string>
+    <string name="group_actions_my_groups">내가 생성한 소모임 관리</string>
+    <string name="group_actions_my_groups_hint">직접 만든 소모임을 관리해요.</string>
+    <string name="group_actions_error_generic">목록을 불러오지 못했습니다. 잠시 후 다시 시도하세요.</string>
+    <string name="joined_groups_empty">참여 중인 소모임이 없습니다.</string>
+    <string name="my_groups_empty">생성한 소모임이 없습니다.</string>
+    <string name="group_creation_sheet_description">현재 화면을 벗어나지 않고 소모임 생성 화면으로 이동합니다. 태그 추천 기능과 함께 새로운 모임을 만들어 보세요.</string>
+    <string name="group_creation_open_form">소모임 생성 화면 열기</string>
+    <string name="close">닫기</string>
 </resources>
