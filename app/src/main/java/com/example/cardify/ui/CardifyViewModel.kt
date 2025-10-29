@@ -6,6 +6,7 @@ import com.example.cardify.UserSession
 import com.example.cardify.data.GroupRepository
 import com.example.cardify.data.model.ChatMessage
 import com.example.cardify.data.model.Group
+import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -62,7 +63,8 @@ class CardifyViewModel : ViewModel() {
         title: String,
         description: String,
         date: String,
-        tags: List<String>
+        tags: List<String>,
+        location: LatLng
     ): Result<String> {
         val trimmedTags = tags.mapNotNull { tag ->
             val cleaned = tag.trim()
@@ -76,10 +78,21 @@ class CardifyViewModel : ViewModel() {
                     date = date.trim(),
                     tags = trimmedTags,
                     leaderId = userId,
-                    leaderName = userName.value.ifEmpty { "게스트" }
+                    leaderName = userName.value.ifEmpty { "게스트" },
+                    latitude = location.latitude,
+                    longitude = location.longitude
                 )
             }
         }
+    }
+
+    fun group(groupId: String): StateFlow<Group?> {
+        return GroupRepository.observeGroup(groupId)
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000),
+                initialValue = null
+            )
     }
 
     fun chatMessages(groupId: String): StateFlow<List<ChatMessage>> {

@@ -11,6 +11,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 import java.util.UUID
 
@@ -72,7 +73,9 @@ object GroupRepository {
         date: String,
         tags: List<String>,
         leaderId: String,
-        leaderName: String
+        leaderName: String,
+        latitude: Double,
+        longitude: Double
     ): String {
         val now = System.currentTimeMillis()
         val members = listOf(leaderId)
@@ -88,6 +91,8 @@ object GroupRepository {
                 leaderName = leaderName,
                 tags = tags,
                 members = members,
+                latitude = latitude,
+                longitude = longitude,
                 createdAt = now
             )
             fallbackGroups.value = (fallbackGroups.value + group)
@@ -104,6 +109,8 @@ object GroupRepository {
             "leaderName" to leaderName,
             "tags" to tags,
             "members" to members,
+            "latitude" to latitude,
+            "longitude" to longitude,
             "createdAt" to now
         )
         doc.set(payload).await()
@@ -185,6 +192,8 @@ object GroupRepository {
                 leaderName = UserSession.userName.ifEmpty { "게스트" },
                 tags = listOf("운동", "러닝"),
                 members = listOf(userId),
+                latitude = 37.5511694,
+                longitude = 126.9882266,
                 createdAt = System.currentTimeMillis()
             ),
             Group(
@@ -196,6 +205,8 @@ object GroupRepository {
                 leaderName = "여행러",
                 tags = listOf("여행", "사진", "맛집"),
                 members = listOf("travel_leader"),
+                latitude = 37.579617,
+                longitude = 126.977041,
                 createdAt = System.currentTimeMillis() - 3_600_000L
             ),
             Group(
@@ -207,6 +218,8 @@ object GroupRepository {
                 leaderName = "개발자A",
                 tags = listOf("코딩", "스터디"),
                 members = listOf("dev_master"),
+                latitude = 37.5662952,
+                longitude = 126.9779451,
                 createdAt = System.currentTimeMillis() - 7_200_000L
             )
         )
@@ -221,6 +234,8 @@ object GroupRepository {
         val leaderName: String? = null,
         val tags: List<String>? = null,
         val members: List<String>? = null,
+        val latitude: Double? = null,
+        val longitude: Double? = null,
         val createdAt: Long? = null
     ) {
         fun toGroup(id: String): Group = Group(
@@ -232,7 +247,33 @@ object GroupRepository {
             leaderName = leaderName.orEmpty(),
             tags = tags ?: emptyList(),
             members = members ?: emptyList(),
+            latitude = latitude ?: 0.0,
+            longitude = longitude ?: 0.0,
             createdAt = createdAt ?: System.currentTimeMillis()
         )
+    }
+
+    fun observeGroup(groupId: String): Flow<Group?> {
+        val db = firestore
+        if (db == null) {
+            return fallbackGroups.map { groups -> groups.firstOrNull { it.id == groupId } }
+        }
+
+        return callbackFlow {
+            val registration = db.collection("groups")
+                .document(groupId)
+                .addSnapshotListener { snapshot, error ->
+                    if (error != null) {
+                        Log.w(TAG, "Failed to listen to group $groupId", error)
+                        trySend(fallbackGroups.value.firstOrNull { it.id == groupId })
+                        return@addSnapshotListener
+                    }
+                    val group = snapshot?.takeIf { it.exists() }?.let { doc ->
+                        doc.toObject(GroupDocument::class.java)?.toGroup(doc.id)
+                    }
+                    trySend(group)
+                }
+            awaitClose { registration.remove() }
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.example.cardify.ui.list
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -39,7 +40,7 @@ fun GroupListScreen(
     recommender: LocalTagRecommender,
     onJoin: (String) -> Unit,
     onCreate: () -> Unit,
-    onOpenChat: (Group) -> Unit
+    onGroupSelected: (Group) -> Unit
 ) {
     val joinedGroups = remember(groups, userId) { groups.filter { it.members.contains(userId) } }
     val preferredTags = remember(joinedGroups) { joinedGroups.flatMap { it.tags }.distinct() }
@@ -103,7 +104,7 @@ fun GroupListScreen(
                         isJoining = joiningGroups.contains(group.id),
                         isLeader = group.leaderId == userId,
                         onJoin = { onJoin(group.id) },
-                        onOpenChat = { onOpenChat(group) }
+                        onViewDetail = { onGroupSelected(group) }
                     )
                 }
             }
@@ -119,12 +120,14 @@ private fun GroupRow(
     isJoining: Boolean,
     isLeader: Boolean,
     onJoin: () -> Unit,
-    onOpenChat: () -> Unit
+    onViewDetail: () -> Unit
 ) {
     Surface(
         shape = RoundedCornerShape(16.dp),
         tonalElevation = 2.dp,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onViewDetail() }
     ) {
         Column(
             modifier = Modifier
@@ -211,8 +214,8 @@ private fun GroupRow(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Button(onClick = onOpenChat, modifier = Modifier.weight(1f)) {
-                    Text(text = stringResource(id = R.string.group_open_chat))
+                Button(onClick = onViewDetail, modifier = Modifier.weight(1f)) {
+                    Text(text = stringResource(id = R.string.group_view_details))
                 }
                 Button(
                     onClick = onJoin,

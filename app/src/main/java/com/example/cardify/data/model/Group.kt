@@ -9,5 +9,7 @@ data class Group(
     val leaderName: String = "",
     val members: List<String> = emptyList(),
     val tags: List<String> = emptyList(),
+    val latitude: Double = 0.0,
+    val longitude: Double = 0.0,
     val createdAt: Long = System.currentTimeMillis()
 )
