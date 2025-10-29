@@ -48,12 +48,12 @@ class LocalTagRecommender(context: Context) {
         val accumulator = FloatArray(VECTOR_SIZE)
         valid.forEach { vector ->
             for (index in vector.indices) {
-                accumulator[index] += vector[index]
+                accumulator[index] = accumulator[index] + vector[index]
             }
         }
-        val count = valid.size.coerceAtLeast(1)
+        val count = valid.size.coerceAtLeast(1).toFloat()
         for (i in accumulator.indices) {
-            accumulator[i] /= count
+            accumulator[i] = accumulator[i] / count
         }
         return accumulator.toList()
     }
