@@ -133,9 +133,6 @@ fun CardifyApp(viewModel: CardifyViewModel = viewModel()) {
                     onGroupSelected = { group -> navController.navigate("$DETAIL_ROUTE/${group.id}") },
                     onGroupHighlighted = { group ->
                         viewModel.focusGroup(group.id)
-                        navController.navigate(MAP_ROUTE) {
-                            launchSingleTop = true
-                        }
                     }
                 )
             }

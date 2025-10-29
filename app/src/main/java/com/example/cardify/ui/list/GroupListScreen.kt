@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -20,6 +21,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -31,6 +33,7 @@ import com.example.cardify.R
 import com.example.cardify.ai.LocalTagRecommender
 import com.example.cardify.data.model.Group
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.launch
 
 @Composable
 fun GroupListScreen(
@@ -111,11 +114,30 @@ fun GroupListScreen(
         }
     }
 
+    val listState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
+    val indexById = remember(scoredGroups) {
+        scoredGroups.mapIndexed { index, (group, _) -> group.id to index }.toMap()
+    }
+    val scrollToGroup: (Group) -> Unit = remember(indexById) {
+        { group ->
+            val position = indexById[group.id]
+            if (position != null) {
+                coroutineScope.launch {
+                    val headerOffset = 4
+                    listState.animateScrollToItem(headerOffset + position)
+                }
+            }
+            onGroupHighlighted(group)
+        }
+    }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        state = listState
     ) {
         item {
             Surface(
@@ -176,7 +198,7 @@ fun GroupListScreen(
                             color = MaterialTheme.colorScheme.primary,
                             textDecoration = TextDecoration.Underline,
                             style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.clickable { onGroupHighlighted(group) }
+                            modifier = Modifier.clickable { scrollToGroup(group) }
                         )
                     }
                 }
@@ -213,7 +235,7 @@ fun GroupListScreen(
                             color = MaterialTheme.colorScheme.primary,
                             textDecoration = TextDecoration.Underline,
                             style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.clickable { onGroupHighlighted(group) }
+                            modifier = Modifier.clickable { scrollToGroup(group) }
                         )
                     }
                 }

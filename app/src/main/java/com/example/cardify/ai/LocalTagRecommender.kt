@@ -26,17 +26,17 @@ class LocalTagRecommender(context: Context) {
                 .forEach { tag -> suggestions.add(tag) }
 
             val inputVec = embed(query)
-            tagEmbeddings.mapNotNull { (tag, embedding) ->
+            val ranked = tagEmbeddings.mapNotNull { (tag, embedding) ->
                 val similarity = cosineSimilarity(embedding, inputVec)
                 if (similarity.isNaN()) null else tag to similarity
             }
-                .filter { it.second >= SIMILARITY_THRESHOLD }
                 .sortedByDescending { it.second }
-                .forEach { (tag, _) ->
-                    if (suggestions.size < MAX_RECOMMENDATIONS) {
-                        suggestions.add(tag)
-                    }
+
+            ranked.forEach { (tag, _) ->
+                if (suggestions.size < MAX_RECOMMENDATIONS) {
+                    suggestions.add(tag)
                 }
+            }
         }
 
         if (suggestions.isEmpty()) {
@@ -113,7 +113,6 @@ class LocalTagRecommender(context: Context) {
         private const val VECTOR_SIZE = 768
         private const val NORMALIZATION_FACTOR = 1000f
         private const val MAX_RECOMMENDATIONS = 3
-        private const val SIMILARITY_THRESHOLD = 0.25f
         private const val LOG_TAG = "LocalTagRecommender"
         private const val FALLBACK_SEED = 2024
         private val FALLBACK_TAGS = listOf("운동", "러닝", "여행", "코딩", "요리")

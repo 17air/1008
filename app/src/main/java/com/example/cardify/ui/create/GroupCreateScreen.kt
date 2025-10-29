@@ -70,7 +70,8 @@ fun GroupCreateScreen(
     var description by rememberSaveable { mutableStateOf("") }
     var date by rememberSaveable { mutableStateOf("") }
     var tagsInput by rememberSaveable { mutableStateOf("") }
-    var recommendedTags by remember { mutableStateOf<List<String>>(emptyList()) }
+    var baseRecommendedTags by remember { mutableStateOf<List<String>>(emptyList()) }
+    var phraseRecommendedTags by remember { mutableStateOf<List<String>>(emptyList()) }
 
     val context = LocalContext.current
     val fusedClient = remember { LocationServices.getFusedLocationProviderClient(context) }
@@ -94,7 +95,8 @@ fun GroupCreateScreen(
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(description) {
-        recommendedTags = recommender.recommendTags(description)
+        baseRecommendedTags = recommender.recommendTags(description)
+        phraseRecommendedTags = extractTogetherTags(description)
     }
 
     LaunchedEffect(Unit) {
@@ -119,6 +121,10 @@ fun GroupCreateScreen(
     }
 
     val scrollState = rememberScrollState()
+    val displayedRecommendations = remember(baseRecommendedTags, phraseRecommendedTags) {
+        (phraseRecommendedTags + baseRecommendedTags).distinct().take(3)
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -153,13 +159,13 @@ fun GroupCreateScreen(
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
         )
-        if (recommendedTags.isNotEmpty()) {
+        if (displayedRecommendations.isNotEmpty()) {
             Text(text = stringResource(id = R.string.group_recommended_tags_label), style = MaterialTheme.typography.titleSmall)
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                recommendedTags.forEach { tag ->
+                displayedRecommendations.forEach { tag ->
                     AssistChip(
                         onClick = { tagsInput = appendTag(tagsInput, tag) },
                         label = { Text("#$tag") },
@@ -268,3 +274,32 @@ private fun appendTag(current: String, tag: String): String {
     }
     return current
 }
+
+private fun extractTogetherTags(description: String): List<String> {
+    if (description.isBlank()) return emptyList()
+    val normalized = description.replace("같이해요", "같이 해요")
+    val results = linkedSetOf<String>()
+    TOGETHER_PATTERNS.forEach { pattern ->
+        pattern.findAll(normalized).forEach { match ->
+            val raw = match.groupValues.getOrNull(1).orEmpty()
+            val cleaned = cleanCandidate(raw)
+            if (cleaned.isNotEmpty()) {
+                results.add(cleaned)
+            }
+        }
+    }
+    return results.take(3)
+}
+
+private fun cleanCandidate(raw: String): String {
+    val sanitized = raw.replace("~", " ").trim()
+    val token = sanitized.split(Regex("\\s+")).lastOrNull().orEmpty()
+    return token.replace(Regex("[^\\p{L}\\d#가-힣]"), "").trim()
+}
+
+private val TOGETHER_PATTERNS = listOf(
+    Regex("(\\S+)\\s*같이\\s*해요", RegexOption.IGNORE_CASE),
+    Regex("(\\S+)\\s*같이해요", RegexOption.IGNORE_CASE),
+    Regex("같이\\s*(\\S+)\\s*해요", RegexOption.IGNORE_CASE),
+    Regex("같이\\s*(\\S+)해요", RegexOption.IGNORE_CASE)
+)
