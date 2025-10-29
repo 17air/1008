@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -143,27 +144,27 @@ private fun GroupActionsMenuScreen(
             supportingContent = { Text(text = stringResource(id = R.string.group_actions_joined_groups_hint)) },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp),
-            colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-            onClick = onJoinedGroups
+                .padding(horizontal = 8.dp)
+                .clickable(onClick = onJoinedGroups),
+            colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
         )
         ListItem(
             headlineContent = { Text(text = stringResource(id = R.string.group_actions_create_group)) },
             supportingContent = { Text(text = stringResource(id = R.string.group_actions_create_group_hint)) },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp),
-            colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-            onClick = onCreateGroup
+                .padding(horizontal = 8.dp)
+                .clickable(onClick = onCreateGroup),
+            colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
         )
         ListItem(
             headlineContent = { Text(text = stringResource(id = R.string.group_actions_my_groups)) },
             supportingContent = { Text(text = stringResource(id = R.string.group_actions_my_groups_hint)) },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp),
-            colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-            onClick = onMyGroups
+                .padding(horizontal = 8.dp)
+                .clickable(onClick = onMyGroups),
+            colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
         )
         Button(
             onClick = onDismiss,
