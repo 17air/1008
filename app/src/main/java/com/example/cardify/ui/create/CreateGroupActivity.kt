@@ -9,8 +9,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.core.widget.doOnTextChanged
 import com.example.cardify.R
 import com.example.cardify.UserSession
+import com.example.cardify.ai.LocalTagRecommender
 import com.example.cardify.data.LocalGroupRepository
 import com.example.cardify.data.model.Group
 import com.example.cardify.data.model.Member
@@ -25,6 +27,7 @@ class CreateGroupActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityCreateGroupBinding
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private var tagRecommender: LocalTagRecommender? = null
 
     private var selectedLatLng: LatLng? = null
 
@@ -46,8 +49,30 @@ class CreateGroupActivity : AppCompatActivity() {
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
+        tagRecommender = try {
+            LocalTagRecommender(applicationContext)
+        } catch (e: Exception) {
+            null
+        }
+        updateRecommendedTags(emptyList())
+
+        binding.descriptionInput.doOnTextChanged { text, _, _, _ ->
+            val description = text?.toString().orEmpty()
+            val recommendations = tagRecommender?.recommendTags(description).orEmpty()
+            updateRecommendedTags(recommendations)
+        }
+
         binding.useLocationButton.setOnClickListener { ensureLocationPermission() }
         binding.createGroupButton.setOnClickListener { createGroup() }
+    }
+
+    private fun updateRecommendedTags(tags: List<String>) {
+        val tagDisplay = if (tags.isEmpty()) {
+            getString(R.string.recommended_tags_none)
+        } else {
+            tags.joinToString(separator = "  ") { "#${it}" }
+        }
+        binding.recommendedTagsText.text = getString(R.string.recommended_tags_label, tagDisplay)
     }
 
     private fun ensureLocationPermission() {
