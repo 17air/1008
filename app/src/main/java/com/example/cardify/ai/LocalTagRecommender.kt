@@ -40,6 +40,31 @@ class LocalTagRecommender(context: Context) {
             .map { it.first }
     }
 
+    fun embeddingForTag(tag: String): List<Float>? = tagEmbeddings[tag]
+
+    fun averageEmbedding(tags: List<String>): List<Float>? {
+        val valid = tags.mapNotNull { tagEmbeddings[it] }
+        if (valid.isEmpty()) return null
+        val accumulator = FloatArray(VECTOR_SIZE)
+        valid.forEach { vector ->
+            for (index in vector.indices) {
+                accumulator[index] += vector[index]
+            }
+        }
+        val count = valid.size.coerceAtLeast(1)
+        for (i in accumulator.indices) {
+            accumulator[i] /= count
+        }
+        return accumulator.toList()
+    }
+
+    fun similarityBetween(tagSetA: List<String>, tagSetB: List<String>): Float? {
+        val first = averageEmbedding(tagSetA) ?: return null
+        val second = averageEmbedding(tagSetB) ?: return null
+        val similarity = cosineSimilarity(first, second)
+        return if (similarity.isNaN()) null else similarity
+    }
+
     private fun cosineSimilarity(v1: List<Float>, v2: List<Float>): Float {
         if (v1.isEmpty() || v2.isEmpty() || v1.size != v2.size) {
             return Float.NaN
