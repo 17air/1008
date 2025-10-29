@@ -8,6 +8,7 @@
     <string name="group_welcome_format">%1$s님, 어떤 모임을 찾고 계신가요?</string>
     <string name="group_create_action">소모임 생성</string>
     <string name="group_list_empty">등록된 소모임이 없습니다. 새로운 소모임을 만들어보세요.</string>
+    <string name="no_groups_found">표시할 소모임이 없습니다.</string>
     <string name="group_recommended_badge">추천</string>
     <string name="group_date_format">모임 일정: %1$s</string>
     <string name="group_date_unknown">일정 미정</string>
@@ -18,6 +19,7 @@
     <string name="group_join_button">참여하기</string>
     <string name="group_joining_button">참여 처리 중…</string>
     <string name="group_joined_button">참여중</string>
+    <string name="join_group">소모임 참여</string>
     <string name="group_create_title">소모임 만들기</string>
     <string name="group_title_hint">모임 제목</string>
     <string name="group_description_hint">모임 설명</string>
@@ -25,6 +27,13 @@
     <string name="group_tags_hint">태그 (쉼표로 구분)</string>
     <string name="group_recommended_tags_label">추천 태그</string>
     <string name="group_recommended_tags_empty">추천 태그가 없습니다.</string>
+    <string name="group_title">모임 제목</string>
+    <string name="group_description">모임 설명</string>
+    <string name="group_tags">모임 태그</string>
+    <string name="group_max_people">최대 인원</string>
+    <string name="recommended_tags_none">추천할 태그가 없습니다.</string>
+    <string name="location_not_selected">모임 위치가 선택되지 않았습니다.</string>
+    <string name="use_current_location">현재 위치 사용</string>
     <string name="group_chat_title">소모임 채팅</string>
     <string name="group_chat_empty">첫 메시지를 남겨보세요.</string>
     <string name="group_chat_message_hint">메시지를 입력하세요</string>
