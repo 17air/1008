@@ -73,7 +73,7 @@ class LocalTagRecommender(context: Context) {
 
     companion object {
         private const val TAG_EMBEDDINGS_FILE = "tag_embeddings.json"
-        private const val VECTOR_SIZE = 384
+        private const val VECTOR_SIZE = 768
         private const val NORMALIZATION_FACTOR = 1000f
         private const val MIN_SIMILARITY_THRESHOLD = 0.2f
         private const val MAX_RECOMMENDATIONS = 3
@@ -136,7 +136,7 @@ class LocalTagRecommender(context: Context) {
     private fun createFallbackEmbeddings(): Map<String, List<Float>> {
         val random = Random(FALLBACK_SEED)
         return FALLBACK_TAGS.associateWith {
-            List(VECTOR_SIZE) { random.nextFloat() }
+            List(VECTOR_SIZE) { random.nextFloat() * 4f - 2f }
         }
     }
 }
