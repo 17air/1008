@@ -12,39 +12,45 @@ class LocalTagRecommender(context: Context) {
     private val recommendedTags: List<String> = loadRecommendedTags(context)
 
     fun recommendTags(input: String): List<String> {
-        if (tagEmbeddings.isEmpty()) {
-            return fallbackTags(input)
-        }
-
         val query = input.trim()
         if (query.isEmpty()) {
             return recommendedTags.take(MAX_RECOMMENDATIONS)
         }
 
-        val inputVec = embed(query)
-        val scoredTags = tagEmbeddings.mapNotNull { (tag, embedding) ->
-            val similarity = cosineSimilarity(embedding, inputVec)
-            if (similarity.isNaN()) {
-                null
-            } else {
-                tag to similarity
+        val suggestions = mutableListOf<String>()
+
+        if (tagEmbeddings.isNotEmpty()) {
+            val normalized = query.lowercase()
+            tagEmbeddings.keys
+                .filter { normalized.contains(it.lowercase()) }
+                .forEach { tag ->
+                    if (!suggestions.contains(tag)) suggestions.add(tag)
+                }
+
+            val inputVec = embed(query)
+            tagEmbeddings.mapNotNull { (tag, embedding) ->
+                val similarity = cosineSimilarity(embedding, inputVec)
+                if (similarity.isNaN()) null else tag to similarity
             }
-        }.sortedByDescending { it.second }
-
-        if (scoredTags.isEmpty()) {
-            return fallbackTags(query)
+                .sortedByDescending { it.second }
+                .forEach { (tag, _) ->
+                    if (suggestions.size < MAX_RECOMMENDATIONS && !suggestions.contains(tag)) {
+                        suggestions.add(tag)
+                    }
+                }
         }
 
-        val primary = scoredTags.take(MAX_RECOMMENDATIONS).map { it.first }
-        if (primary.size >= MAX_RECOMMENDATIONS) {
-            return primary
+        if (suggestions.size < MAX_RECOMMENDATIONS) {
+            fallbackTags(query)
+                .filterNot { suggestions.contains(it) }
+                .forEach { tag ->
+                    if (suggestions.size < MAX_RECOMMENDATIONS) {
+                        suggestions.add(tag)
+                    }
+                }
         }
 
-        val fallback = fallbackTags(query)
-            .filterNot { tag -> primary.contains(tag) }
-            .take(MAX_RECOMMENDATIONS - primary.size)
-
-        return (primary + fallback).take(MAX_RECOMMENDATIONS)
+        return suggestions.take(MAX_RECOMMENDATIONS)
     }
 
     fun embeddingForTag(tag: String): List<Float>? = tagEmbeddings[tag]

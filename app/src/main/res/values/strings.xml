@@ -14,6 +14,7 @@
     <string name="group_create_action">소모임 생성</string>
     <string name="group_list_empty">등록된 소모임이 없습니다. 새로운 소모임을 만들어보세요.</string>
     <string name="group_list_all_groups">전체 그룹(%1$d)</string>
+    <string name="group_list_similar_header">내 태그와 비슷한 소모임</string>
     <string name="no_groups_found">표시할 소모임이 없습니다.</string>
     <string name="group_recommended_badge">추천</string>
     <string name="group_date_format">모임 일정: %1$s</string>

@@ -6,8 +6,14 @@
     "date": "매주 화/목 06:30",
     "leaderId": "leader_running",
     "leaderName": "러닝리더",
-    "tags": ["운동", "러닝", "건강"],
-    "members": ["leader_running"],
+    "tags": [
+      "운동",
+      "러닝",
+      "건강"
+    ],
+    "members": [
+      "leader_running"
+    ],
     "latitude": 37.5512,
     "longitude": 126.9882,
     "createdAt": 1717286400000
@@ -19,8 +25,14 @@
     "date": "매주 토요일 14:00",
     "leaderId": "coffee_maker",
     "leaderName": "카페러",
-    "tags": ["카페", "코딩", "스터디"],
-    "members": ["coffee_maker"],
+    "tags": [
+      "카페",
+      "코딩",
+      "스터디"
+    ],
+    "members": [
+      "coffee_maker"
+    ],
     "latitude": 37.5663,
     "longitude": 126.9779,
     "createdAt": 1717200000000
@@ -32,10 +44,339 @@
     "date": "2024-08-31",
     "leaderId": "trip_host",
     "leaderName": "여행가",
-    "tags": ["여행", "사진", "캠핑"],
-    "members": ["trip_host"],
+    "tags": [
+      "여행",
+      "사진",
+      "캠핑"
+    ],
+    "members": [
+      "trip_host"
+    ],
     "latitude": 37.5796,
-    "longitude": 126.9770,
+    "longitude": 126.977,
     "createdAt": 1717113600000
+  },
+  {
+    "id": "seed-hiking-night",
+    "title": "북악산 야간등반",
+    "description": "야경 보면서 안전하게 같이 올라가요.",
+    "date": "매주 금요일 20:00",
+    "leaderId": "night_hiker",
+    "leaderName": "야밤산책",
+    "tags": [
+      "등산",
+      "운동",
+      "야경"
+    ],
+    "members": [
+      "night_hiker"
+    ],
+    "latitude": 37.5923,
+    "longitude": 126.9803,
+    "createdAt": 1717027200000
+  },
+  {
+    "id": "seed-boardgame",
+    "title": "홍대 보드게임 모임",
+    "description": "신작 보드게임 위주로 즐겨요.",
+    "date": "격주 일요일 16:00",
+    "leaderId": "board_master",
+    "leaderName": "보드왕",
+    "tags": [
+      "보드게임",
+      "취미",
+      "친목"
+    ],
+    "members": [
+      "board_master"
+    ],
+    "latitude": 37.5552,
+    "longitude": 126.9236,
+    "createdAt": 1716940800000
+  },
+  {
+    "id": "seed-study",
+    "title": "CS 지식 스터디",
+    "description": "매주 한 챕터씩 공부하고 발표합니다.",
+    "date": "매주 수요일 19:30",
+    "leaderId": "cs_host",
+    "leaderName": "스택오버",
+    "tags": [
+      "코딩",
+      "스터디",
+      "IT"
+    ],
+    "members": [
+      "cs_host"
+    ],
+    "latitude": 37.498,
+    "longitude": 127.0276,
+    "createdAt": 1716854400000
+  },
+  {
+    "id": "seed-language",
+    "title": "이태원 언어교환",
+    "description": "영어/한국어 번갈아 대화해요.",
+    "date": "매주 토요일 18:00",
+    "leaderId": "language_leader",
+    "leaderName": "글로비",
+    "tags": [
+      "언어교환",
+      "영어",
+      "친목"
+    ],
+    "members": [
+      "language_leader"
+    ],
+    "latitude": 37.5347,
+    "longitude": 126.9946,
+    "createdAt": 1716768000000
+  },
+  {
+    "id": "seed-yoga",
+    "title": "잠실 아침 요가",
+    "description": "강변에서 햇살받으며 요가해요.",
+    "date": "매주 월/수 07:00",
+    "leaderId": "yoga_master",
+    "leaderName": "요가요정",
+    "tags": [
+      "요가",
+      "운동",
+      "건강"
+    ],
+    "members": [
+      "yoga_master"
+    ],
+    "latitude": 37.5209,
+    "longitude": 127.1038,
+    "createdAt": 1716681600000
+  },
+  {
+    "id": "seed-photo",
+    "title": "을지로 필름 산책",
+    "description": "필름 카메라로 골목길 담아요.",
+    "date": "매주 일요일 11:00",
+    "leaderId": "film_leader",
+    "leaderName": "필름러",
+    "tags": [
+      "사진",
+      "필름",
+      "산책"
+    ],
+    "members": [
+      "film_leader"
+    ],
+    "latitude": 37.5675,
+    "longitude": 127.008,
+    "createdAt": 1716595200000
+  },
+  {
+    "id": "seed-coding",
+    "title": "토이 프로젝트 나이트",
+    "description": "각자 아이디어를 공유하고 개발합니다.",
+    "date": "매주 금요일 21:00",
+    "leaderId": "code_host",
+    "leaderName": "디버거",
+    "tags": [
+      "코딩",
+      "사이드프로젝트",
+      "IT"
+    ],
+    "members": [
+      "code_host"
+    ],
+    "latitude": 37.4816,
+    "longitude": 126.9527,
+    "createdAt": 1716508800000
+  },
+  {
+    "id": "seed-food",
+    "title": "을지로 맛집 탐방",
+    "description": "월 1회 숨겨진 맛집을 찾아요.",
+    "date": "매달 마지막 주 토요일",
+    "leaderId": "foodie",
+    "leaderName": "맛잘알",
+    "tags": [
+      "맛집",
+      "탐방",
+      "친목"
+    ],
+    "members": [
+      "foodie"
+    ],
+    "latitude": 37.5669,
+    "longitude": 126.9997,
+    "createdAt": 1716422400000
+  },
+  {
+    "id": "seed-climb",
+    "title": "실내 클라이밍 초보반",
+    "description": "볼더링 처음인 분들을 환영합니다.",
+    "date": "매주 일요일 13:00",
+    "leaderId": "climb_lead",
+    "leaderName": "클라임",
+    "tags": [
+      "클라이밍",
+      "운동",
+      "체험"
+    ],
+    "members": [
+      "climb_lead"
+    ],
+    "latitude": 37.561,
+    "longitude": 127.0369,
+    "createdAt": 1716336000000
+  },
+  {
+    "id": "seed-cycle",
+    "title": "한강 자전거 라이딩",
+    "description": "주말 오전 30km 코스 함께 달려요.",
+    "date": "매주 토요일 09:00",
+    "leaderId": "cycle_leader",
+    "leaderName": "라이더",
+    "tags": [
+      "자전거",
+      "운동",
+      "건강"
+    ],
+    "members": [
+      "cycle_leader"
+    ],
+    "latitude": 37.5286,
+    "longitude": 126.9352,
+    "createdAt": 1716249600000
+  },
+  {
+    "id": "seed-book",
+    "title": "한달 한권 북클럽",
+    "description": "매달 선정도서를 읽고 이야기 나눠요.",
+    "date": "매달 둘째 주 토요일",
+    "leaderId": "book_master",
+    "leaderName": "책벌레",
+    "tags": [
+      "독서",
+      "스터디",
+      "대화"
+    ],
+    "members": [
+      "book_master"
+    ],
+    "latitude": 37.5049,
+    "longitude": 127.0484,
+    "createdAt": 1716163200000
+  },
+  {
+    "id": "seed-movie",
+    "title": "독립영화 모임",
+    "description": "작은 영화관에서 인디영화를 함께 봐요.",
+    "date": "격주 토요일 18:30",
+    "leaderId": "movie_host",
+    "leaderName": "필름덕",
+    "tags": [
+      "영화",
+      "문화",
+      "대화"
+    ],
+    "members": [
+      "movie_host"
+    ],
+    "latitude": 37.5615,
+    "longitude": 126.9985,
+    "createdAt": 1716076800000
+  },
+  {
+    "id": "seed-volunteer",
+    "title": "도심 봉사 모임",
+    "description": "주말마다 환경 정화 활동을 합니다.",
+    "date": "매주 일요일 10:00",
+    "leaderId": "volunteer_lead",
+    "leaderName": "클린시티",
+    "tags": [
+      "봉사",
+      "환경",
+      "친목"
+    ],
+    "members": [
+      "volunteer_lead"
+    ],
+    "latitude": 37.5704,
+    "longitude": 126.9832,
+    "createdAt": 1715990400000
+  },
+  {
+    "id": "seed-music",
+    "title": "홍대 버스킹 잼",
+    "description": "연주곡 공유하고 즉흥 연주를 즐겨요.",
+    "date": "매주 목요일 19:00",
+    "leaderId": "music_host",
+    "leaderName": "버스커",
+    "tags": [
+      "음악",
+      "버스킹",
+      "친목"
+    ],
+    "members": [
+      "music_host"
+    ],
+    "latitude": 37.5561,
+    "longitude": 126.9237,
+    "createdAt": 1715904000000
+  },
+  {
+    "id": "seed-startup",
+    "title": "스타트업 토론회",
+    "description": "스타트업 아이디어를 공유하고 피드백해요.",
+    "date": "매주 화요일 19:30",
+    "leaderId": "startup_lead",
+    "leaderName": "벤처",
+    "tags": [
+      "창업",
+      "비즈니스",
+      "토론"
+    ],
+    "members": [
+      "startup_lead"
+    ],
+    "latitude": 37.4995,
+    "longitude": 127.0373,
+    "createdAt": 1715817600000
+  },
+  {
+    "id": "seed-drawing",
+    "title": "성수 드로잉 클래스",
+    "description": "카페에서 라이브 드로잉 연습해요.",
+    "date": "매주 토요일 15:00",
+    "leaderId": "drawing_lead",
+    "leaderName": "스케치",
+    "tags": [
+      "드로잉",
+      "예술",
+      "취미"
+    ],
+    "members": [
+      "drawing_lead"
+    ],
+    "latitude": 37.5446,
+    "longitude": 127.0559,
+    "createdAt": 1715731200000
+  },
+  {
+    "id": "seed-garden",
+    "title": "도시 텃밭 가꾸기",
+    "description": "옥상 텃밭에서 허브를 키워요.",
+    "date": "매주 토요일 10:30",
+    "leaderId": "garden_lead",
+    "leaderName": "그린핸드",
+    "tags": [
+      "원예",
+      "친환경",
+      "취미"
+    ],
+    "members": [
+      "garden_lead"
+    ],
+    "latitude": 37.5684,
+    "longitude": 126.9904,
+    "createdAt": 1715644800000
   }
 ]

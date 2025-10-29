@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AssistChip
-import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -25,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.cardify.R
@@ -36,14 +35,17 @@ fun GroupListScreen(
     groups: List<Group>,
     userId: String,
     userName: String,
+    userTag: String,
     joiningGroups: Set<String>,
     recommender: LocalTagRecommender,
     onJoin: (String) -> Unit,
     onCreate: () -> Unit,
-    onGroupSelected: (Group) -> Unit
+    onGroupSelected: (Group) -> Unit,
+    onGroupHighlighted: (Group) -> Unit
 ) {
     val joinedGroups = remember(groups, userId) { groups.filter { it.members.contains(userId) } }
     val preferredTags = remember(joinedGroups) { joinedGroups.flatMap { it.tags }.distinct() }
+    val normalizedUserTag = remember(userTag) { userTag.trim() }
     val scoredGroups = remember(groups, preferredTags) {
         groups.map { group ->
             val similarity = if (preferredTags.isEmpty()) {
@@ -53,6 +55,29 @@ fun GroupListScreen(
             }
             group to similarity
         }.sortedWith(compareByDescending<Pair<Group, Float>> { it.second }.thenByDescending { it.first.createdAt })
+    }
+
+    val highlightedGroups = remember(groups, normalizedUserTag) {
+        if (normalizedUserTag.isEmpty()) {
+            emptyList()
+        } else {
+            groups.mapNotNull { group ->
+                val exact = group.tags.any { it.equals(normalizedUserTag, ignoreCase = true) }
+                val partial = group.tags.any { it.contains(normalizedUserTag, ignoreCase = true) }
+                val similarity = recommender.similarityBetween(listOf(normalizedUserTag), group.tags) ?: 0f
+                val score = when {
+                    exact -> 2f
+                    partial -> 1.5f
+                    similarity.isNaN() || similarity <= 0f -> 0f
+                    else -> similarity
+                }
+                if (score > 0f) group to score else null
+            }
+                .sortedByDescending { it.second }
+                .map { it.first }
+                .distinct()
+                .take(3)
+        }
     }
 
     LazyColumn(
@@ -84,6 +109,33 @@ fun GroupListScreen(
             }
         }
 
+        if (highlightedGroups.isNotEmpty()) {
+            item {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 4.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.group_list_similar_header),
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    highlightedGroups.forEach { group ->
+                        Text(
+                            text = group.title,
+                            color = MaterialTheme.colorScheme.primary,
+                            textDecoration = TextDecoration.Underline,
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.clickable { onGroupHighlighted(group) }
+                        )
+                    }
+                }
+            }
+        }
+
         item {
             Text(
                 text = stringResource(id = R.string.group_list_all_groups, groups.size),
@@ -110,10 +162,9 @@ fun GroupListScreen(
                 }
             }
         } else {
-            items(scoredGroups) { (group, score) ->
+            items(scoredGroups) { (group, _) ->
                 GroupRow(
                     group = group,
-                    similarity = score,
                     isMember = group.members.contains(userId),
                     isJoining = joiningGroups.contains(group.id),
                     isLeader = group.leaderId == userId,
@@ -128,7 +179,6 @@ fun GroupListScreen(
 @Composable
 private fun GroupRow(
     group: Group,
-    similarity: Float,
     isMember: Boolean,
     isJoining: Boolean,
     isLeader: Boolean,
@@ -156,16 +206,6 @@ private fun GroupRow(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                if (similarity > 0.2f) {
-                    AssistChip(
-                        onClick = {},
-                        label = { Text(stringResource(id = R.string.group_recommended_badge)) },
-                        colors = AssistChipDefaults.assistChipColors(
-                            labelColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer
-                        )
-                    )
-                }
             }
             Spacer(modifier = Modifier.height(4.dp))
             Text(

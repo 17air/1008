@@ -58,6 +58,8 @@ fun MapScreen(
     onGroupSelected: (Group) -> Unit,
     onOpenList: () -> Unit,
     onOpenMore: () -> Unit,
+    focusedGroupId: String?,
+    onFocusConsumed: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -106,6 +108,16 @@ fun MapScreen(
             )
             hasCenteredMap = true
         }
+    }
+
+    LaunchedEffect(focusedGroupId, groups) {
+        val targetId = focusedGroupId ?: return@LaunchedEffect
+        val targetGroup = groups.find { it.id == targetId }
+        if (targetGroup != null && (targetGroup.latitude != 0.0 || targetGroup.longitude != 0.0)) {
+            val position = LatLng(targetGroup.latitude, targetGroup.longitude)
+            cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(position, 15f))
+        }
+        onFocusConsumed()
     }
 
     Box(modifier = modifier.fillMaxSize()) {

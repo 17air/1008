@@ -136,14 +136,12 @@ fun GroupCreateScreen(
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
         )
         OutlinedTextField(
-            value = date,
-            onValueChange = { date = it },
-            label = { Text(stringResource(id = R.string.group_date_hint)) },
-            modifier = Modifier
-                .fillMaxWidth(),
+            value = description,
+            onValueChange = { description = it },
+            label = { Text(stringResource(id = R.string.group_description_hint)) },
             singleLine = true,
-            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
-            placeholder = { Text(text = stringResource(id = R.string.group_date_placeholder)) }
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
         )
         if (recommendedTags.isNotEmpty()) {
             Text(text = stringResource(id = R.string.group_recommended_tags_label), style = MaterialTheme.typography.titleSmall)
@@ -165,20 +163,22 @@ fun GroupCreateScreen(
             Text(text = stringResource(id = R.string.group_recommended_tags_empty), style = MaterialTheme.typography.bodyMedium)
         }
         OutlinedTextField(
-            value = description,
-            onValueChange = { description = it },
-            label = { Text(stringResource(id = R.string.group_description_hint)) },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
-        )
-        OutlinedTextField(
             value = tagsInput,
             onValueChange = { tagsInput = it },
             label = { Text(stringResource(id = R.string.group_tags_hint)) },
             singleLine = false,
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words)
+        )
+        OutlinedTextField(
+            value = date,
+            onValueChange = { date = it },
+            label = { Text(stringResource(id = R.string.group_date_hint)) },
+            modifier = Modifier
+                .fillMaxWidth(),
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
+            placeholder = { Text(text = stringResource(id = R.string.group_date_placeholder)) }
         )
         Text(
             text = stringResource(id = R.string.group_create_location_instruction),

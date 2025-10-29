@@ -35,6 +35,9 @@ class CardifyViewModel : ViewModel() {
             initialValue = emptyList()
         )
 
+    private val _focusedGroupId = MutableStateFlow<String?>(null)
+    val focusedGroupId: StateFlow<String?> = _focusedGroupId.asStateFlow()
+
     fun updateUserName(name: String) {
         if (name == _userName.value) return
         _userName.value = name
@@ -103,6 +106,14 @@ class CardifyViewModel : ViewModel() {
         viewModelScope.launch {
             runCatching { GroupRepository.deleteGroup(groupId) }
         }
+    }
+
+    fun focusGroup(groupId: String) {
+        _focusedGroupId.value = groupId
+    }
+
+    fun clearFocusedGroup() {
+        _focusedGroupId.value = null
     }
 
     private fun displayName(): String {

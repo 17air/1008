@@ -72,6 +72,7 @@ fun CardifyApp(viewModel: CardifyViewModel = viewModel()) {
     val joiningGroups by viewModel.joiningGroups.collectAsStateWithLifecycle()
     val userName by viewModel.userName.collectAsStateWithLifecycle()
     val userTag by viewModel.userTag.collectAsStateWithLifecycle()
+    val focusedGroupId by viewModel.focusedGroupId.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val recommender = remember { LocalTagRecommender(context) }
     val coroutineScope = rememberCoroutineScope()
@@ -109,7 +110,9 @@ fun CardifyApp(viewModel: CardifyViewModel = viewModel()) {
                     groups = groups,
                     onGroupSelected = { group -> navController.navigate("$DETAIL_ROUTE/${group.id}") },
                     onOpenList = { navController.navigate(LIST_ROUTE) },
-                    onOpenMore = { showActionSheet = true }
+                    onOpenMore = { showActionSheet = true },
+                    focusedGroupId = focusedGroupId,
+                    onFocusConsumed = { viewModel.clearFocusedGroup() }
                 )
             }
             composable(LIST_ROUTE) {
@@ -117,11 +120,18 @@ fun CardifyApp(viewModel: CardifyViewModel = viewModel()) {
                     groups = groups,
                     userId = UserSession.userId,
                     userName = userName,
+                    userTag = userTag,
                     joiningGroups = joiningGroups,
                     recommender = recommender,
                     onJoin = { viewModel.joinGroup(it) },
                     onCreate = { navController.navigate(CREATE_ROUTE) },
-                    onGroupSelected = { group -> navController.navigate("$DETAIL_ROUTE/${group.id}") }
+                    onGroupSelected = { group -> navController.navigate("$DETAIL_ROUTE/${group.id}") },
+                    onGroupHighlighted = { group ->
+                        viewModel.focusGroup(group.id)
+                        navController.navigate(MAP_ROUTE) {
+                            launchSingleTop = true
+                        }
+                    }
                 )
             }
             composable(JOINED_ROUTE) {
