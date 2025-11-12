@@ -104,8 +104,9 @@ fun CardifyApp(viewModel: CardifyViewModel = viewModel()) {
 
     val isMapRoute = currentRoute.startsWith(MAP_ROUTE)
 
-    val displayName = remember(userName, userTag) {
-        val base = userName.ifBlank { stringResource(id = R.string.user_guest_placeholder) }
+    val guestPlaceholder = stringResource(id = R.string.user_guest_placeholder)
+    val displayName = remember(userName, userTag, guestPlaceholder) {
+        val base = userName.ifBlank { guestPlaceholder }
         val tag = userTag.trim()
         if (tag.isBlank()) base else "$base ○ #$tag"
     }
