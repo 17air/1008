@@ -2,14 +2,11 @@ package com.example.cardify.ui.chat
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
 import com.example.cardify.data.model.ChatMessage
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 
 class ChatViewModel(private val groupId: String) : ViewModel() {
     private val db = FirebaseFirestore.getInstance()
@@ -18,7 +15,7 @@ class ChatViewModel(private val groupId: String) : ViewModel() {
         .collection("messages")
 
     private val _messages = MutableStateFlow<List<ChatMessage>>(emptyList())
-    val messages: StateFlow<List<ChatMessage>> = _messages.asStateFlow()
+    val messages: StateFlow<List<ChatMessage>> = _messages
 
     private var registration: ListenerRegistration? = null
 
@@ -29,9 +26,10 @@ class ChatViewModel(private val groupId: String) : ViewModel() {
                 if (error != null) {
                     return@addSnapshotListener
                 }
-                val mapped = snapshot?.documents?.mapNotNull { document ->
+                val documents = snapshot?.documents ?: emptyList()
+                val mapped = documents.mapNotNull { document ->
                     document.toObject(ChatMessage::class.java)?.copy(id = document.id)
-                } ?: emptyList()
+                }
                 _messages.value = mapped
             }
     }
@@ -45,9 +43,7 @@ class ChatViewModel(private val groupId: String) : ViewModel() {
             body = trimmed,
             sentAt = System.currentTimeMillis()
         )
-        viewModelScope.launch {
-            runCatching { messagesRef.add(message) }
-        }
+        runCatching { messagesRef.add(message) }
     }
 
     override fun onCleared() {

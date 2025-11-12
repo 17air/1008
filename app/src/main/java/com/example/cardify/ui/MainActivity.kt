@@ -1,5 +1,6 @@
 package com.example.cardify.ui
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -52,6 +53,8 @@ import com.example.cardify.ui.mygroups.MyOwnedGroupsScreen
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreSettings
 import kotlinx.coroutines.launch
 
 private const val MAP_ROUTE = "map_screen"
@@ -60,12 +63,16 @@ private const val CREATE_ROUTE = "group_create"
 private const val DETAIL_ROUTE = "group_detail"
 private const val JOINED_ROUTE = "joined_groups"
 private const val OWNED_ROUTE = "owned_groups"
-private const val CHAT_ROUTE = "group_chat"
+private const val CHAT_ROUTE = "chat_screen"
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         FirebaseApp.initializeApp(this)
+        FirebaseFirestore.getInstance().firestoreSettings =
+            FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true)
+                .build()
         ensureFirebaseUser()
         setContent { CardifyApp() }
     }
@@ -131,7 +138,9 @@ fun CardifyApp(viewModel: CardifyViewModel = viewModel()) {
             composable(MAP_ROUTE) {
                 MapScreen(
                     groups = groups,
-                    onGroupSelected = { group -> navController.navigate("$DETAIL_ROUTE/${group.id}") },
+                    onGroupSelected = { group ->
+                        navController.navigate("$DETAIL_ROUTE/${Uri.encode(group.id)}")
+                    },
                     onOpenList = { navController.navigate(LIST_ROUTE) },
                     onOpenMore = { showActionSheet = true },
                     userLocation = userLocation,
@@ -151,7 +160,9 @@ fun CardifyApp(viewModel: CardifyViewModel = viewModel()) {
                     recommender = recommender,
                     onJoin = { viewModel.joinGroup(it) },
                     onCreate = { navController.navigate(CREATE_ROUTE) },
-                    onGroupSelected = { group -> navController.navigate("$DETAIL_ROUTE/${group.id}") },
+                    onGroupSelected = { group ->
+                        navController.navigate("$DETAIL_ROUTE/${Uri.encode(group.id)}")
+                    },
                     onGroupHighlighted = { group ->
                         viewModel.focusGroup(group.id)
                     }
@@ -162,7 +173,9 @@ fun CardifyApp(viewModel: CardifyViewModel = viewModel()) {
                     groups = groups,
                     currentUserId = UserSession.userId,
                     onBack = { navController.popBackStack() },
-                    onGroupSelected = { group -> navController.navigate("$DETAIL_ROUTE/${group.id}") }
+                    onGroupSelected = { group ->
+                        navController.navigate("$DETAIL_ROUTE/${Uri.encode(group.id)}")
+                    }
                 )
             }
             composable(CREATE_ROUTE) {
@@ -179,7 +192,7 @@ fun CardifyApp(viewModel: CardifyViewModel = viewModel()) {
                             isCreating = false
                             result.onSuccess { groupId ->
                                 navController.popBackStack()
-                                navController.navigate("$DETAIL_ROUTE/$groupId")
+                                navController.navigate("$DETAIL_ROUTE/${Uri.encode(groupId)}")
                             }.onFailure { error ->
                                 createError = error.localizedMessage ?: "Unknown error"
                             }
@@ -194,14 +207,17 @@ fun CardifyApp(viewModel: CardifyViewModel = viewModel()) {
                     onBack = { navController.popBackStack() },
                     onEditGroup = { viewModel.updateGroup(it) },
                     onDeleteGroup = { viewModel.deleteGroup(it) },
-                    onOpenDetail = { group -> navController.navigate("$DETAIL_ROUTE/${group.id}") }
+                    onOpenDetail = { group ->
+                        navController.navigate("$DETAIL_ROUTE/${Uri.encode(group.id)}")
+                    }
                 )
             }
             composable(
                 route = "$DETAIL_ROUTE/{groupId}",
                 arguments = listOf(navArgument("groupId") { type = NavType.StringType })
             ) { entry ->
-                val groupId = entry.arguments?.getString("groupId") ?: return@composable
+                val encoded = entry.arguments?.getString("groupId") ?: return@composable
+                val groupId = Uri.decode(encoded)
                 val groupFlow = remember(groupId) { viewModel.group(groupId) }
                 val groupState by groupFlow.collectAsStateWithLifecycle()
                 GroupDetailScreen(
@@ -210,14 +226,17 @@ fun CardifyApp(viewModel: CardifyViewModel = viewModel()) {
                     isJoining = joiningGroups.contains(groupId),
                     onBack = { navController.popBackStack() },
                     onJoin = { viewModel.joinGroup(groupId) },
-                    onOpenChat = { navController.navigate("$CHAT_ROUTE/${it.id}") }
+                    onOpenChat = { group ->
+                        navController.navigate("$CHAT_ROUTE/${Uri.encode(group.id)}")
+                    }
                 )
             }
             composable(
                 route = "$CHAT_ROUTE/{groupId}",
                 arguments = listOf(navArgument("groupId") { type = NavType.StringType })
             ) { entry ->
-                val groupId = entry.arguments?.getString("groupId") ?: return@composable
+                val encoded = entry.arguments?.getString("groupId") ?: return@composable
+                val groupId = Uri.decode(encoded)
                 ChatScreen(
                     groupId = groupId,
                     userName = displayName,
