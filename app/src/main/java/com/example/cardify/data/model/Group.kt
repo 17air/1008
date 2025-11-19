@@ -11,5 +11,6 @@ data class Group(
     val tags: List<String> = emptyList(),
     val latitude: Double = 0.0,
     val longitude: Double = 0.0,
-    val createdAt: Long = System.currentTimeMillis()
+    val createdAt: Long = System.currentTimeMillis(),
+    val memberDisplayNames: Map<String, String> = emptyMap()
 )

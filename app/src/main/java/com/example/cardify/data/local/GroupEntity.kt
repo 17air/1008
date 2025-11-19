@@ -15,5 +15,6 @@ data class GroupEntity(
     val members: List<String>,
     val latitude: Double,
     val longitude: Double,
-    val createdAt: Long
+    val createdAt: Long,
+    val memberDisplayNames: Map<String, String>
 )

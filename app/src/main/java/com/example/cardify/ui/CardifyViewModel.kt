@@ -38,23 +38,29 @@ class CardifyViewModel : ViewModel() {
     private val _focusedGroupId = MutableStateFlow<String?>(null)
     val focusedGroupId: StateFlow<String?> = _focusedGroupId.asStateFlow()
 
+    init {
+        GroupRepository.syncUserProfile(_userName.value, _userTag.value)
+    }
+
     fun updateUserName(name: String) {
         if (name == _userName.value) return
         _userName.value = name
         UserSession.userName = name
+        GroupRepository.syncUserProfile(name, _userTag.value)
     }
 
     fun updateUserTag(tag: String) {
         if (tag == _userTag.value) return
         _userTag.value = tag
         UserSession.userTag = tag
+        GroupRepository.syncUserProfile(_userName.value, tag)
     }
 
     fun joinGroup(groupId: String) {
         if (_joiningGroups.value.contains(groupId)) return
         _joiningGroups.update { it + groupId }
         viewModelScope.launch {
-            runCatching { GroupRepository.joinGroup(groupId, userId) }
+            runCatching { GroupRepository.joinGroup(groupId, userId, displayName()) }
             _joiningGroups.update { it - groupId }
         }
     }
